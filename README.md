@@ -97,8 +97,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-Environment="ACCESS_KEY_ID=LTAI5tR8XS2SuFFmwVS7Gbf3"
-Environment="ACCESS_KEY_SECRET=E8F4eYJRkvPvURV2TrA6fJvQpjOFD5"
+Environment="ACCESS_KEY_ID=*"
+Environment="ACCESS_KEY_SECRET=*"
 ExecStart=/data/server/yajs.service/yajs -c /data/server/yajs.service
 
 [Install]
