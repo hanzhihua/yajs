@@ -22,7 +22,7 @@ func EnterJumpServer(sess *ssh.Session) error{
 	if shell == ""{
 		shell = "/bin/bash"
 	}
-	cmd := exec.Command(shell,"--login","-i")
+	cmd := exec.Command(shell,"--login")
 	//cmd := exec.Command(shell)
 	p, winCh, isPty := (*sess).Pty()
 	if isPty {
@@ -32,7 +32,8 @@ func EnterJumpServer(sess *ssh.Session) error{
 			return err
 		}
 		if sshUser == nil || (*sshUser).IsRootUser(){
-			//cmd.Env = append(cmd.Env, "HOME=/root")
+			cmd.Env = append(cmd.Env, "HOME=/root")
+			cmd.Dir = "/root";
 		}else{
 			u, err := user.Lookup((*sshUser).Username)
 			if err == nil{
@@ -40,7 +41,8 @@ func EnterJumpServer(sess *ssh.Session) error{
 				gid, _ := strconv.Atoi(u.Gid)
 				cmd.SysProcAttr = &syscall.SysProcAttr{}
 				cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uint32(uid), Gid: uint32(gid)}
-				//cmd.Env = append(cmd.Env, "HOME="+u.HomeDir)
+				cmd.Dir = u.HomeDir
+				cmd.Env = append(cmd.Env, "HOME="+u.HomeDir)
 			}else{
 				return err
 			}
