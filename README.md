@@ -1,5 +1,6 @@
 # yajs
 Yet Another Jump Server
+![img.png](imgs/overview.png)
 
 ## 动机
 生产环境中有几十台ecs服务器，很明显是需要一个跳板机来支撑日常运维工作，在github.com找了一些开源解决方案，并没特别合适的,
@@ -114,5 +115,5 @@ WantedBy=multi-user.target
 TODO
 
 ### 跳板机基础功能
-![img.png](imgs/img.png)
+![img.png](imgs/basic.png)
 TODO
