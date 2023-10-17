@@ -15,6 +15,38 @@ Yet Another Jump Server
 
 _**这些工作应该是工程化，通常在装机初始化时完成。**_
 
+### 配置文件
+#### config.yaml
+主配置文件，包括yajs用户、统一的ssh user、服务列表
+```
+users:
+  - username: admin
+  - username: 张三
+  - username: 李四
+sshusers:
+  -
+    username: root
+    privateKeyFile: root_rsa
+  -
+    username: web
+    privateKeyFile: web_rsa
+servers:
+  -
+    name: saas01
+    ip: 10.1.1.1
+  -
+    name: saas02
+    ip: 10.1.1.2
+    port: 22
+    
+```
+其中servers也支持provider方式，目前提供了aliyun server provider，方式如下
+```
+server_provider:  aliyun
+```
+
+### 运行
+
 ## yajs 设计
 
 ### 跳板机基础功能
