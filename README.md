@@ -112,9 +112,5 @@ WantedBy=multi-user.target
 
 查看日志：journalctl -u yajs.service
 
-## yajs 设计
-TODO
-
-### 跳板机基础功能
-![img.png](imgs/basic.png)
-TODO
+## yajs 系统设计
+设计相关的，请移步到[系统设计](./design.md).
