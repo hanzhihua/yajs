@@ -1,6 +1,6 @@
 GITCOMMIT:=$(shell git describe --always)
 BINARY:=yajs
-SYSTEM:=
+SYSTEM:=GOOS=linux  GOARCH=amd64
 CHECKS:=check
 BUILDOPTS:=-v
 GOPATH?=go
