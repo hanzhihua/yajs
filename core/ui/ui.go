@@ -131,25 +131,11 @@ func init() {
 	}
 }
 
-const logo = `
-   __        _
-  / /__   __(_)__ _      __
- / __/ | / / / _ \ | /| / /
-/ /_ | |/ / /  __/ |/ |/ /
-\__/ |___/_/\___/|__/|__/
-
-`
-
 func (uiService *UIService) ShowUI(){
 	defer func() {
 		(*uiService.Session).Exit(0)
 	}()
 	selectedChain := make([]*MenuItem, 0)
-	//templ := `{{ .Title "Yet another jump server" "" 0 }}`
-	//var buffer bytes.Buffer
-	//banner.Init(&buffer, true, true, bytes.NewBufferString(templ))
-	//label := buffer.String()
-	//fmt.Println(label)
 	uiService.ShowMenu(utils.SLOGAN, MainMenu, "退出", selectedChain)
 }
 

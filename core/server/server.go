@@ -17,14 +17,14 @@ import (
 	"yajs/config"
 	_ "yajs/config/aliyun"
 	"yajs/core/helper"
-
-	//"yajs/core/client"
-	//"yajs/core/helper"
 	"yajs/core/ui"
 	"yajs/utils"
 )
 
-var reloadSignal = []os.Signal{syscall.SIGUSR1, syscall.SIGUSR2}
+var (
+	reloadSignal = []os.Signal{syscall.SIGUSR1, syscall.SIGUSR2}
+	SshIdleTimeout = 2*60
+)
 
 func Run(configDir string,port int){
 
@@ -64,7 +64,7 @@ func Run(configDir string,port int){
 		ssh.PublicKeyAuth(publickKeyAuth),
 		ssh.HostKeyFile(hkFile),
 		func(srv *ssh.Server) error {
-			srv.IdleTimeout = 2*time.Minute
+			srv.IdleTimeout = time.Duration(SshIdleTimeout) * time.Second
 			return nil
 		},
 	))

@@ -37,13 +37,11 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 
 	pty, winCh, _ := (*sess).Pty()
 
-	utils.Logger.Debugf("pty term:%v,window:%v",pty.Term, pty.Window)
+	utils.Logger.Warningf("pty term:%v,window:%v,",pty.Term, pty.Window)
 
 	modes := gossh.TerminalModes{
-		gossh.ECHO:          1,
-		gossh.ECHOCTL: 0,
-		gossh.IXON: 0,
-		gossh.IXOFF: 0,
+		//gossh.ECHO:          1,
+		gossh.IEXTEN: 0,
 		gossh.TTY_OP_ISPEED: 14400,
 		gossh.TTY_OP_OSPEED: 14400,
 	}
