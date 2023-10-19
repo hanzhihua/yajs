@@ -11,17 +11,15 @@ import (
 
 
 var (
-	port          int
 	showHelp      bool
-	configDir     string
 	GitCommit string
 )
 
 func init() {
 	flag.BoolVar(&showHelp, "help", false, "Show help")
-	flag.IntVar(&port,"p", 2222, "Port")
+	flag.IntVar(&server.Port,"p", 2222, "Port")
 	defaultConfigDir := fmt.Sprintf("%s%s", utils.ProcUser.HomeDir, "/yajs/")
-	flag.StringVar(&configDir,"c",defaultConfigDir,"Config Directory")
+	flag.StringVar(&server.ConfigDir,"c",defaultConfigDir,"Config Directory")
 	flag.IntVar(&server.SshIdleTimeout,"ssh.idletimeout",120,"Ssh idletimeout")
 	flag.Parse()
 }
@@ -31,10 +29,10 @@ func main() {
 	if showHelp {
 		flag.Usage()
 		fmt.Print(releaseString())
-		os.Exit(2)
+		return
 	}
 
-	server.Run(configDir,port)
+	server.Run()
 }
 
 func releaseString() string {

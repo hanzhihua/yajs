@@ -23,18 +23,20 @@ import (
 
 var (
 	reloadSignal = []os.Signal{syscall.SIGUSR1, syscall.SIGUSR2}
-	SshIdleTimeout = 2*60
+	ConfigDir string
+	SshIdleTimeout int
+	Port int
 )
 
-func Run(configDir string,port int){
+func Run(){
 
-	config.ConfDir = &configDir
+	config.ConfDir = &ConfigDir
 	err := config.Setup()
 	if err != nil{
 		utils.Logger.Errorf("fail to start,err:%v",err)
 		os.Exit(2)
 	}
-	addr := ":"+strconv.Itoa(port)
+	addr := ":"+strconv.Itoa(Port)
 	setupReloadSignal()
 
 	hkFile,err := config.Instance.GetHostKeyFile()
