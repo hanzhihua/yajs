@@ -19,3 +19,7 @@ yajs:clean
 clean:
 	go clean
 	rm -f yajs
+
+.PHONY: dev
+dev:clean
+	CGO_ENABLED=$(CGO_ENABLED)  go build $(BUILDOPTS) -ldflags="-s -w -X main.GitCommit=$(GITCOMMIT)" -o $(BINARY) cmd/yajs.go
