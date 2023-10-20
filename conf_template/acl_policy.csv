@@ -1,0 +1,7 @@
+p, admin_group, *, allow
+p, normal_group, *, allow
+p, normal_group, menu:jumpserver, deny
+
+g, test1, normal_group
+g, test2, normal_group
+g, admin, admin_group

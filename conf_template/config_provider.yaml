@@ -1,0 +1,10 @@
+users:
+  - username: admin
+  - username: test1
+  - username: test2
+  - username: jack
+sshusers:
+  - username: root
+  - username: web
+server_provider:  aliyun
+

@@ -1,0 +1,19 @@
+users:
+  - username: admin
+  - username: test1
+  - username: test2
+  - username: jack
+sshusers:
+  - username: root
+  - username: web
+servers:
+  -
+    name: saas01
+    ip: 10.1.1.1
+  -
+    name: saas02
+    ip: 10.1.1.2
+    port: 22
+  - name: abc
+    ip: 10.1.1.20
+    port: 22
