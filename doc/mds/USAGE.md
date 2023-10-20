@@ -7,6 +7,11 @@
 
 _**这些工作应该是工程化，通常在装机初始化时完成。**_
 
+## 编译
+### 源码编译
+* git clone https://github.com/hanzhihua/yajs.git
+* make
+
 ## 配置文件
 _启动变量confdir是配置目录，相关配置文件都在该目录下面_
 配置文件包括：
@@ -86,9 +91,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-Environment="ACCESS_KEY_ID=你的KEY"
-Environment="ACCESS_KEY_SECRET=你的KEY_SECRET"
-ExecStart=/data/server/yajs.service/yajs -c /data/server/yajs.service
+ExecStart=/.../yajs -c 你的configdir
 
 [Install]
 WantedBy=multi-user.target
