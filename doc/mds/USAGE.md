@@ -118,11 +118,12 @@ WantedBy=multi-user.target
 查看日志：journalctl -u yajs.service
 
 ### 新增、删除、修改 用户、sshuser、server
+* 修改config.yaml
 * 如果新增用户 
   * 使用ssh-keygen生成公私钥，把公钥内容copy到pubs/*_pub文件
   * 私钥给到用户，做登录使用
-* 直接修改config.yaml
-* yajs -s reload
+* 修改权限 acl_policy.csv
+* kill -usr1 pid 
 
 
 ### 查看审计日志
