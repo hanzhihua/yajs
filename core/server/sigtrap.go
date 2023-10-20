@@ -23,8 +23,7 @@ func trapSignals() {
 				utils.Logger.Warningf("[INFO] SIGTERM: Shutting down servers then terminating")
 				os.Exit(0)
 
-			case syscall.SIGUSR1:
-			case syscall.SIGUSR2:
+			case syscall.SIGUSR1 , syscall.SIGUSR2:
 				utils.Logger.Warningf("Receive %s : Reloading",sig)
 				config.Reload()
 				utils.Logger.Warningf("Receive %s : Reload finish",sig)
@@ -33,3 +32,4 @@ func trapSignals() {
 		}
 	}()
 }
+

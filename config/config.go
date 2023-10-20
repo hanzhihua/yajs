@@ -21,50 +21,21 @@ var (
 )
 
 func Setup() error {
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
 	if Instance != nil{
 		utils.Logger.Warningf("setup has already executed")
 		return nil
 	}
-	err := readFromDefault()
+	tmpConf,err := readFromDefault()
 	if err != nil{
 		return err
 	}
-	enforcer, err = casbin.NewEnforcer(*ConfDir+"/acl_model.conf", *ConfDir+"/acl_policy.csv")
+	enforcer, err = NewEnforcer()
 	if err != nil{
 		return err
 	}
-	enforcer.AddFunction("rMatch",func(args ...interface{}) (interface{}, error){
-		if len(args) != 2{
-			utils.Logger.Panicf("args:%v len isn't two",args)
-		}
-		for _, p := range args {
-			err, ok := p.(string)
-			if !ok {
-				utils.Logger.Panicf("has error:%v",err)
-			}
-		}
-		left := strings.Split(args[0].(string),"|")
-		right := strings.Split(args[1].(string),"|")
-
-		if len(right) == 1 && right[0] == "*"{
-			return true,nil
-		}
-		if len(left) == 1 && len(right) == 1{
-			server := left[0]
-			policyServer := right[0]
-			return internalMatch(server,policyServer),nil
-		}else if len(left) == 2 && len(right) == 2{
-			server := left[0]
-			sshuser := left[1]
-			policyServer := right[0]
-			policySshuser := right[1]
-
-			return internalMatch(server,policyServer) && internalMatch(sshuser,policySshuser),nil
-		}else{
-			utils.Logger.Debugf("left:%v,right:%v dose not match",left,right)
-			return false, nil
-		}
-	})
+	Instance = tmpConf
 	return nil
 }
 
@@ -127,17 +98,6 @@ func GetPrivateKeyContent(sshuserName string)(string,error){
 	return string(bs),nil
 }
 
-func internalMatch(key1 string, key2 string) bool {
-	i := strings.Index(key2, "*")
-	if i == -1 {
-		return key1 == key2
-	}
-
-	if len(key1) > i {
-		return key1[:i] == key2[:i]
-	}
-	return key1 == key2[:i]
-}
 
 type Config struct {
 	Users   []*User   `yaml:"users"`
@@ -164,87 +124,72 @@ type SSHUser struct {
 	PrivateKeyContent string
 }
 
-func readFromDefault() error {
+func readFromDefault() (*Config,error) {
 	if ConfDir ==nil{
 		utils.Logger.Panicf("conf path is nil")
 	}
 	confFile,err := GetConfigFile()
 	if err != nil{
-		return err
+		return nil,err
 	}
 	return readFrom(confFile)
 }
 
-func readFrom(path string) error {
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
+func readFrom(path string) (*Config,error) {
 	configBytes, err := os.ReadFile(utils.FilePath(path))
 	if err != nil {
 		utils.Logger.Errorf("Error reading YAML file: %s\n", err)
-		return err
+		return nil,err
 	}
 	tmpConf := &Config{sshUserMap:map[string]*SSHUser{}}
 	err = yaml.Unmarshal([]byte(configBytes), tmpConf)
-	Instance = tmpConf
 	if err != nil {
 		utils.Logger.Warningf("Error parsing YAML file: %s\n", err)
-		return err
+		return nil,err
 	}
-	for _,user := range Instance.Users{
+	for _,user := range tmpConf.Users{
 		user.PublicKeyContent,err = GetPubKeyContent(user.Username)
 		if err != nil{
-			return err
+			return nil,err
 		}
 	}
-	for _,sshuser := range Instance.SshUsers{
+	for _,sshuser := range tmpConf.SshUsers{
 		sshuser.PrivateKeyContent,err = GetPrivateKeyContent(sshuser.Username)
 		if err != nil{
-			return err
+			return nil,err
 		}
 	}
 
-	for _,sshUser  := range Instance.SshUsers{
-		Instance.sshUserMap[sshUser.Username] = sshUser
+	for _,sshUser  := range tmpConf.SshUsers{
+		tmpConf.sshUserMap[sshUser.Username] = sshUser
 	}
-	if Instance.Servers == nil && Instance.ServerProvider != nil{
+	if tmpConf.Servers == nil && tmpConf.ServerProvider != nil{
 		for _,provider := range serverProviders{
-			if (*provider).Name() == *Instance.ServerProvider{
-				Instance.Servers,err = (*provider).GetAllServer()
+			if (*provider).Name() == *tmpConf.ServerProvider{
+				tmpConf.Servers,err = (*provider).GetAllServer()
 				if err != nil{
-					return err
+					return nil,err
 				}
 			}
 		}
 	}
 
-	utils.Logger.Infof("config:%+v", Instance)
-	return nil
+	return tmpConf,nil
 }
 
 func Reload() error{
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
 	utils.Logger.Warningf("reload config")
-	err := readFromDefault()
+	tmpConf,err := readFromDefault()
 	if err != nil{
 		utils.Logger.Errorf("reloading has error:%v",err)
 		return err
 	}
-	utils.Logger.Infof("config:%v", Instance)
+	Instance = tmpConf
+	utils.Logger.Infof("reload config:%v finish", Instance)
 	return nil
 }
-
-func SaveTo() error {
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
-	utils.Logger.Infof("Save config to '%s'\n", *ConfDir)
-	bytes, err := yaml.Marshal(Instance)
-	if err != nil {
-		utils.Logger.Infof("Error parsing YAML obj: %s\n", err)
-		return err
-	}
-	os.WriteFile(*ConfDir, bytes, 0644)
-	return nil
-}
-
 
 func (config *Config) GetUserByUsername(username *string) *User {
 	rwMutex.RLock()
@@ -280,26 +225,6 @@ func  (config *Config) GetServerByName(name *string) *Server {
 	}
 	utils.Logger.Infof("%s doesn't exist",name)
 	return nil
-}
-
-
-func isAdmin(session * ssh.Session) bool{
-	return false
-}
-
-func checkSession(session *ssh.Session) bool{
-	if session == nil{
-		return false
-	}
-	context := (*session).Context()
-	if context == nil{
-		return false
-	}
-	user := (*session).User()
-	if strings.TrimSpace(user) == ""{
-		return false
-	}
-	return true
 }
 
 func CanAssessMenu(user,menuId string) (bool,error){
