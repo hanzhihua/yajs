@@ -1,7 +1,7 @@
 # 遇到到问题
 
-### 进入具体server是，shell丢失环境变量
-* 解决方案：
+### 进入具体server时，shell丢失相关的环境变量
+解决方案：
     * 原来代码是这样写的 
   ```
   shell := os.Getenv("SHELL")
