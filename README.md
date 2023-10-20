@@ -23,4 +23,4 @@ Yet Another Jump Server
 系统设计相关的，请移步到[系统设计](doc/mds/DESIGN.md).
 
 ## 遇到到问题
-遇到到问题，请移步到[遇到到问题](doc/mds/FAQ.md).
+系统开发中遇到到问题，及解决方案也记录下来，有兴趣请移步到[遇到到问题](doc/mds/FAQ.md).
