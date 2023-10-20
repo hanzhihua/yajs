@@ -186,7 +186,15 @@ func Reload() error{
 		utils.Logger.Errorf("reloading has error:%v",err)
 		return err
 	}
+
+	tmpEnforcer, err := NewEnforcer()
+
+	if err != nil{
+		utils.Logger.Errorf("reloading has error:%v",err)
+		return err
+	}
 	Instance = tmpConf
+	enforcer = tmpEnforcer
 	utils.Logger.Infof("reload config:%v finish", Instance)
 	return nil
 }
