@@ -2,8 +2,8 @@
 
 
 ## 跳板机初步印象
-![img.png](imgs/basic.png)
-![img.png](imgs/dataflow.png)
+![img.png](../imgs/basic.png)
+![img.png](../imgs/dataflow.png)
 
 ## 功能分解
 系统功能主要包括以下：

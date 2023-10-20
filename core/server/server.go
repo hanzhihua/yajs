@@ -29,7 +29,7 @@ var (
 )
 
 func Run(){
-
+	trapSignals()
 	config.ConfDir = &ConfigDir
 	err := config.Setup()
 	if err != nil{
@@ -37,7 +37,7 @@ func Run(){
 		os.Exit(2)
 	}
 	addr := ":"+strconv.Itoa(Port)
-	setupReloadSignal()
+
 
 	hkFile,err := config.Instance.GetHostKeyFile()
 	if err != nil{
@@ -107,20 +107,6 @@ func publickKeyAuth(ctx ssh.Context, key ssh.PublicKey) bool {
 	return b
 }
 
-func setupReloadSignal() {
-
-	reloadHandler := make(chan os.Signal, 2)
-	signal.Notify(reloadHandler, reloadSignal...)
-	go func() {
-		for{
-			s := <-reloadHandler
-			utils.Logger.Infof("signal:%v",s)
-			config.Reload()
-		}
-
-	}()
-
-}
 
 func GetRealName(ctx ssh.Context) (*string,error){
 	username := ctx.User()

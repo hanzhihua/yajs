@@ -10,7 +10,7 @@ import (
 
 
 var (
-	showHelp      bool
+	showHelp  bool
 	GitCommit string
 )
 
