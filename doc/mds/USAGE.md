@@ -1,9 +1,9 @@
 # 使用指南
 
 ## 前置要求
-* 所有ecs需要统一的用户，比如每一个ecs包含一个root用户、一个web用户
+* 所有server需要统一的用户，比如每一个server包含一个root用户、一个web用户
 * 所有ecs都需要安装、并启动opensshd
-* 需要把跳板机的id_rsa.pub 同步到所有ecs对应用户的authorized_keys中，并保证从跳板机可以ssh到所有ecs上
+* 需要把跳板机的id_rsa.pub 同步到所有server对应用户的authorized_keys中，并保证从跳板机可以ssh到所有server上
 
 _**这些工作应该是工程化，通常在装机初始化时完成。**_
 
@@ -34,7 +34,7 @@ _系统启动时会做上述检查，如不通过则启动失败_
   * 公钥文件为ssh-keygen生成公钥
 * pris sshuser的私钥目录
     * 如 username: 张三，那么就需要confdir/pris/张三_rsa
-    * 私钥文件为ssh-keygen生成私钥
+    * 私钥文件为ssh-keygen生成私钥，并同步到所有server的具体用户的authorized_keys文件中
 #### config.yaml文件
 主配置文件，包括user、sshuser、服务列表三部分
 ```
@@ -118,6 +118,9 @@ WantedBy=multi-user.target
 查看日志：journalctl -u yajs.service
 
 ### 新增、删除、修改 用户、sshuser、server
+* 如果新增用户 
+  * 使用ssh-keygen生成公私钥，把公钥内容copy到pubs/*_pub文件
+  * 私钥给到用户，做登录使用
 * 直接修改config.yaml
 * yajs -s reload
 
