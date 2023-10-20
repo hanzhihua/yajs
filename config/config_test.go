@@ -141,7 +141,7 @@ func TestPubKey(t *testing.T) {
 		t.Error(err)
 	}
 	username := "hanzhihua"
-	pub := Instance.GetUserByUsername(&username).PublicKey
+	pub := Instance.GetUserByUsername(&username).PublicKeyContent
 	allowed, _, _, _, _ := ssh.ParseAuthorizedKey( []byte(pub))
 	bs,err := os.ReadFile(*ConfDir+"/test_rsa")
 	if err != nil{

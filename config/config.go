@@ -89,7 +89,7 @@ func GetConfigFile() (string,error){
 	return file,nil
 }
 
-func GetPubKey(username string) (string,error){
+func GetPubKeyContent(username string) (string,error){
 	file := *ConfDir+"/pubs/"+username+".pub"
 	fileInfo,err := os.Stat(file)
 
@@ -106,7 +106,25 @@ func GetPubKey(username string) (string,error){
 		return "",err
 	}
 	return string(bs),nil
+}
 
+func GetPrivateKeyContent(sshuserName string)(string,error){
+	file := *ConfDir+"/pris/"+sshuserName+"_rsa"
+	fileInfo,err := os.Stat(file)
+
+	if err != nil{
+		return "",err
+	}
+
+	if fileInfo.IsDir(){
+		return "",errors.New(fmt.Sprintf("%s is a directory",file))
+	}
+
+	bs,err := os.ReadFile(file)
+	if err != nil{
+		return "",err
+	}
+	return string(bs),nil
 }
 
 func internalMatch(key1 string, key2 string) bool {
@@ -130,8 +148,8 @@ type Config struct {
 }
 
 type User struct {
-	Username   string `yaml:"username"`
-	PublicKey  string
+	Username         string `yaml:"username"`
+	PublicKeyContent string
 }
 
 type Server struct {
@@ -142,8 +160,8 @@ type Server struct {
 }
 
 type SSHUser struct {
-	Username       string `yaml:"username"`
-	PrivateKeyFile string `yaml:"privateKeyFile"`
+	Username          string `yaml:"username"`
+	PrivateKeyContent string
 }
 
 func readFromDefault() error {
@@ -173,11 +191,18 @@ func readFrom(path string) error {
 		return err
 	}
 	for _,user := range Instance.Users{
-		user.PublicKey,err = GetPubKey(user.Username)
+		user.PublicKeyContent,err = GetPubKeyContent(user.Username)
 		if err != nil{
 			return err
 		}
 	}
+	for _,sshuser := range Instance.SshUsers{
+		sshuser.PrivateKeyContent,err = GetPrivateKeyContent(sshuser.Username)
+		if err != nil{
+			return err
+		}
+	}
+
 	for _,sshUser  := range Instance.SshUsers{
 		Instance.sshUserMap[sshUser.Username] = sshUser
 	}
@@ -192,7 +217,7 @@ func readFrom(path string) error {
 		}
 	}
 
-	utils.Logger.Infof("config:%v", Instance)
+	utils.Logger.Infof("config:%+v", Instance)
 	return nil
 }
 

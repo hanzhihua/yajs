@@ -8,7 +8,6 @@ import (
 	"github.com/gliderlabs/ssh"
 	"net"
 	"os"
-	"os/signal"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -92,7 +91,7 @@ func publickKeyAuth(ctx ssh.Context, key ssh.PublicKey) bool {
 		return true
 	}
 
-	pubkey, _, _, _, err := ssh.ParseAuthorizedKey( []byte(user.PublicKey))
+	pubkey, _, _, _, err := ssh.ParseAuthorizedKey( []byte(user.PublicKeyContent))
 	if err != nil{
 		utils.Logger.Errorf("%s login fail, because occurs err:%v",username,err)
 		return false

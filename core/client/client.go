@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gliderlabs/ssh"
-	"io/ioutil"
 	"net"
 	"strings"
 	"yajs/config"
@@ -73,16 +72,8 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 
 
 func NewSSHClient(server *config.Server, sshUser *config.SSHUser) (*gossh.Client, error) {
-	if !utils.FileExited(sshUser.PrivateKeyFile) {
-		return nil, errors.New(fmt.Sprintf("%s can not find the identity file",sshUser.Username))
-	}
 
-	key, err := ioutil.ReadFile(utils.FilePath(sshUser.PrivateKeyFile))
-	if err != nil {
-		return nil, err
-	}
-
-	signer, err := gossh.ParsePrivateKey(key)
+	signer, err := gossh.ParsePrivateKey([]byte(sshUser.PrivateKeyContent))
 	if err != nil {
 		utils.Logger.Error(err)
 		return nil, err
