@@ -11,7 +11,6 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 	"yajs/config"
 	_ "yajs/config/aliyun"
@@ -21,7 +20,6 @@ import (
 )
 
 var (
-	reloadSignal = []os.Signal{syscall.SIGUSR1, syscall.SIGUSR2}
 	ConfigDir string
 	SshIdleTimeout int
 	Port int
@@ -48,6 +46,7 @@ func Run(){
 			if r := recover(); r != nil {
 				s := string(debug.Stack())
 				utils.Logger.Errorf("exception stack:\n%s",s)
+				helper.GetWriter(&sess).WriteExist(true)
 			}
 		}()
 		_,err := helper.NewWriter(&sess)
@@ -57,13 +56,16 @@ func Run(){
 		printBanner(&sess)
 		uiService := ui.UIService{Session:&sess}
 		uiService.ShowUI()
+		helper.GetWriter(&sess).WriteExist(false)
 	})
 
 	utils.Logger.Fatal(ssh.ListenAndServe(
 		addr,
 		nil,
 		ssh.PublicKeyAuth(publickKeyAuth),
+		//ssh.WrapConn(warpConn),
 		ssh.HostKeyFile(hkFile),
+		//ssh.ConnCallback()
 		func(srv *ssh.Server) error {
 			srv.IdleTimeout = time.Duration(SshIdleTimeout) * time.Second
 			return nil
@@ -144,3 +146,22 @@ func printBanner(sess *ssh.Session){
 	color := color.New(color.FgMagenta)
 	color.Fprint((*sess), fmt.Sprintf("\n当前登陆用户名: %s\n", (*sess).User()))
 }
+
+
+
+//func warpConn(ctx ssh.Context, conn net.Conn) net.Conn{
+//
+//	return &yajsConn{conn}
+//}
+//
+//type yajsConn struct {
+//	net.Conn
+//}
+//
+//func (yajsConn *yajsConn)Close() error{
+//	s := string(debug.Stack())
+//	utils.Logger.Errorf("print stack:\n%s",s)
+//	utils.Logger.Warningf("yajs conn close")
+//	return yajsConn.Conn.Close()
+//
+//}

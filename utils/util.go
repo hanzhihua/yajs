@@ -25,6 +25,7 @@ const (
 	Default_SSH_PORT = 22
 	SERVER_PREFIX = "server:"
 	MENU_PREFIX = "menu:"
+	TIME_LAYOUT = "2006-01-02 15:04:05"
 )
 
 var (

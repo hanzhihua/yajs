@@ -152,14 +152,20 @@ func GetWriter(sess *ssh.Session) *Writer {
 }
 
 func (w *Writer) BeginWrite(serverName string) (n int, err error) {
-	timestr := time.Now().Format("20060102150405")
+	timestr := time.Now().Format(utils.TIME_LAYOUT)
 	content := fmt.Sprintf(serverName+" begin==========================%s===========================\n",timestr)
 	return w.file.Write([]byte(content));
 }
 
 func (w *Writer) WriteEnd(serverName string) (n int, err error) {
-	timestr := time.Now().Format("20060102150405")
+	timestr := time.Now().Format(utils.TIME_LAYOUT)
 	content := fmt.Sprintf(serverName+" end==========================%s===========================\n\n\n",timestr)
+	return w.file.Write([]byte(content));
+}
+
+func (w *Writer) WriteExist(panic bool) (n int, err error) {
+	timestr := time.Now().Format(utils.TIME_LAYOUT)
+	content := fmt.Sprintf("Panic:%t,Exist==========================%s===========================\n\n\n",panic,timestr)
 	return w.file.Write([]byte(content));
 }
 
