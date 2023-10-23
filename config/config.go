@@ -279,18 +279,25 @@ func (config *Config) GetSshUser(session *ssh.Session,server string) (*SSHUser,e
 	rwMutex.RLock()
 	defer rwMutex.RUnlock()
 	ctx := (*session).Context()
-
+	user := ctx.Value(utils.USER_KEY).(*User)
 	sshuserName,ok := ctx.Value(utils.SSHUSER_KEY).(*string)
 	if ok{
 		sshuser,ok := config.sshUserMap[*sshuserName]
 		if ok{
+			b,err := CanAssessServerWithSshuser(user.Username,server,sshuser.Username)
+			if err != nil{
+				return nil,err
+			}
+			if !b{
+				return nil,errors.New(fmt.Sprintf("%s hava no right to login %s with sshuser:%s",user.Username,server,sshuser.Username))
+			}
 			return sshuser,nil
 		}else{
 			return nil,errors.New(fmt.Sprintf("sshuser:%s do not exist",*sshuserName))
 		}
 	}
 
-	user := ctx.Value(utils.USER_KEY).(*User)
+
 
 	for _,sshuser := range config.SshUsers{
 		b,err := CanAssessServerWithSshuser(user.Username,server,sshuser.Username)

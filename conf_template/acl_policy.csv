@@ -1,6 +1,8 @@
 p, admin_group, *, allow
 p, normal_group, *, allow
+p, normal_group, *|root, deny
 p, normal_group, menu:jumpserver, deny
+p, normal_group, menu:batchCmd, deny
 
 g, test1, normal_group
 g, test2, normal_group
