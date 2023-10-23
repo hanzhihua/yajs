@@ -87,10 +87,12 @@ acl_policy.csv 权限策略文件
 ```
 p, admin_group, *, allow
 p, normal_group, *, allow
+p, normal_group, *|root, deny
 p, normal_group, menu:jumpserver, deny
+p, normal_group, menu:batchCmd, deny
 
-g, 张三, normal_group
-g, 李四, normal_group
+g, test1, normal_group
+g, test2, normal_group
 g, admin, admin_group
 
 ```
