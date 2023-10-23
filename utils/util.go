@@ -2,11 +2,15 @@ package utils
 
 import (
 	"fmt"
+	"github.com/dimiro1/banner"
+	"github.com/fatih/color"
+	"io"
 	"net"
 	"os"
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 )
 
@@ -26,6 +30,12 @@ const (
 	SERVER_PREFIX = "server:"
 	MENU_PREFIX = "menu:"
 	TIME_LAYOUT = "2006-01-02 15:04:05"
+)
+
+var (
+	ConfigDir string
+	SshIdleTimeout int
+	Port int
 )
 
 var (
@@ -120,4 +130,25 @@ func ContainsStr(slice []string, element string) bool {
 		}
 	}
 	return false
+}
+
+func PrintBanner(w io.Writer){
+
+	w.Write([]byte("\n"))
+	templ := `{{ .AnsiColor.BrightMagenta }}{{ .Title "Yajs" "starwars" 0 }}{{ .AnsiColor.Default }}`
+	banner.InitString(w, true, true, templ)
+}
+
+func PrintBannerWithUsername(w io.Writer,username string){
+
+	w.Write([]byte("\n"))
+	templ := `{{ .AnsiColor.BrightMagenta }}{{ .Title "Yajs" "starwars" 0 }}{{ .AnsiColor.Default }}`
+	banner.InitString(w, true, true, templ)
+	color := color.New(color.FgMagenta)
+	color.Fprint(w, fmt.Sprintf("\n当前登陆用户名: %s\n", username))
+}
+
+func PrintStackTrace(){
+	s := string(debug.Stack())
+	Logger.Errorf("exception stack:\n%s",s)
 }

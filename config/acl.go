@@ -58,3 +58,43 @@ func internalMatch(key1 string, key2 string) bool {
 	}
 	return key1 == key2[:i]
 }
+
+func CanAssessMenu(user,menuId string) (bool,error){
+	return enforcer.Enforce(user,withMenuPrefix(menuId))
+}
+
+func CanAssessServer(user,server string) (bool,error){
+	return enforcer.Enforce(user,withServerPrefix(server))
+}
+
+func CanAssessServerWithSshuser(user,server,sshuser string) (bool,error){
+	b,err := enforcer.Enforce(user,withServerPrefix(server))
+	if err != nil{
+		utils.Logger.Errorf("CanAssessServerWithSshuser user:%s,server:%s,err:%v",user,server,err)
+		return false,err
+	}
+	if !b{
+		utils.Logger.Warningf("CanAssessServerWithSshuser user:%s,server:%s,result:%v",user,server,b)
+		return false,nil
+	}
+
+	resource := withServerPrefix(server+"|"+sshuser)
+	b,err = enforcer.Enforce(user,resource)
+	if err != nil{
+		utils.Logger.Errorf("CanAssessServerWithSshuser user:%s,server:%s,err:%v",user,resource,err)
+		return false,err
+	}
+	if !b{
+		utils.Logger.Warningf("CanAssessServerWithSshuser user:%s,server:%s,result:%v",user,resource,b)
+		return false,nil
+	}
+	return true,nil
+}
+
+func withServerPrefix(reousrce string) string{
+	return utils.SERVER_PREFIX+reousrce
+}
+
+func withMenuPrefix(reousrce string) string{
+	return utils.MENU_PREFIX+reousrce
+}

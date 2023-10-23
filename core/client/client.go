@@ -7,7 +7,7 @@ import (
 	"net"
 	"strings"
 	"yajs/config"
-	"yajs/core/helper"
+	"yajs/core/common"
 	"yajs/utils"
 
 	"github.com/fatih/color"
@@ -26,7 +26,7 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	}
 	defer upstreamSess.Close()
 
-	writer := helper.GetWriter(sess)
+	writer := common.GetWriter(sess)
 	if err != nil{
 		return err
 	}
@@ -39,8 +39,7 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	utils.Logger.Warningf("pty term:%v,window:%v,",pty.Term, pty.Window)
 
 	modes := gossh.TerminalModes{
-		//gossh.ECHO:          1,
-		gossh.IEXTEN: 0,
+		gossh.ECHO:          1,
 		gossh.TTY_OP_ISPEED: 14400,
 		gossh.TTY_OP_OSPEED: 14400,
 	}

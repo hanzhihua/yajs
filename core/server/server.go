@@ -8,34 +8,19 @@ import (
 	"github.com/gliderlabs/ssh"
 	"net"
 	"os"
-	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
 	"yajs/config"
 	_ "yajs/config/aliyun"
-	"yajs/core/helper"
+	"yajs/core/common"
 	"yajs/core/ui"
 	"yajs/utils"
 )
 
-var (
-	ConfigDir string
-	SshIdleTimeout int
-	Port int
-)
-
 func Run(){
-	trapSignals()
-	config.ConfDir = &ConfigDir
-	err := config.Setup()
-	if err != nil{
-		utils.Logger.Errorf("fail to start,err:%v",err)
-		os.Exit(2)
-	}
-	addr := ":"+strconv.Itoa(Port)
 
-
+	addr := ":"+strconv.Itoa(utils.Port)
 	hkFile,err := config.Instance.GetHostKeyFile()
 	if err != nil{
 		utils.Logger.Error("fail to start,err:%v",err)
@@ -43,20 +28,22 @@ func Run(){
 	}
 	ssh.Handle(func(sess ssh.Session) {
 		defer func() {
+			sess.Exit(0)
 			if r := recover(); r != nil {
-				s := string(debug.Stack())
-				utils.Logger.Errorf("exception stack:\n%s",s)
-				helper.GetWriter(&sess).WriteExist(true)
+				utils.PrintStackTrace()
+				common.GetWriter(&sess).WriteExist(true)
+			}else{
+				common.GetWriter(&sess).WriteExist(false)
 			}
 		}()
-		_,err := helper.NewWriter(&sess)
+		_,err := common.NewWriter(&sess)
 		if err != nil{
-			utils.Logger.Panic(err)
+			utils.Logger.Errorf("it occur error :%v, when generated aduit log ",err)
+			return
 		}
-		printBanner(&sess)
+		utils.PrintBannerWithUsername(sess,sess.User())
 		uiService := ui.UIService{Session:&sess}
 		uiService.ShowUI()
-		helper.GetWriter(&sess).WriteExist(false)
 	})
 
 	utils.Logger.Fatal(ssh.ListenAndServe(
@@ -67,7 +54,7 @@ func Run(){
 		ssh.HostKeyFile(hkFile),
 		//ssh.ConnCallback()
 		func(srv *ssh.Server) error {
-			srv.IdleTimeout = time.Duration(SshIdleTimeout) * time.Second
+			srv.IdleTimeout = time.Duration(utils.SshIdleTimeout) * time.Second
 			return nil
 		},
 	))
