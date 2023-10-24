@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"
 	"os"
 	"strings"
@@ -39,6 +40,8 @@ func BatchRunCMD(sess *ssh.Session,cmdFile string) error{
 			return err
 		}
 	}
+	green := color.New(color.FgGreen)
+	green.Fprint(*sess, fmt.Sprintf("%s execute successfully",cmdFile))
 	return nil
 }
 
@@ -61,6 +64,6 @@ func runCMD(sess *ssh.Session,host,cmd string) error{
 	if err != nil {
 		return err
 	}
-	utils.Logger.Infof("%s in %s run was sucessful,result:%t",cmd,host,bs)
+	utils.Logger.Infof("%s in %s run was sucessful,result:%v",cmd,host,bs)
 	return nil
 }
