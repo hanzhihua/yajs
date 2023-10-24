@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"
 	"os"
 	"strings"
@@ -40,8 +39,6 @@ func BatchRunCMD(sess *ssh.Session,cmdFile string) error{
 			return err
 		}
 	}
-	green := color.New(color.FgGreen)
-	green.Fprint(*sess, fmt.Sprintf("%s execute successfully",cmdFile))
 	return nil
 }
 

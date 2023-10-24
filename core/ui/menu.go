@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"
 	"github.com/manifoldco/promptui"
 	"io"
@@ -83,7 +84,12 @@ func batchCMDSelect() func(index int, menuItem *MenuItem, sess *ssh.Session, sel
 		if err != nil {
 			return err
 		}
-		return batchcmd.BatchRunCMD(sess, cmdFile)
+		err =  batchcmd.BatchRunCMD(sess, cmdFile)
+		if err == nil{
+			green := color.New(color.FgGreen)
+			green.Fprint(*sess, fmt.Sprintf("%s execute successfully",cmdFile))
+		}
+		return err
 	}
 }
 
