@@ -96,6 +96,11 @@ g, test2, normal_group
 g, admin, admin_group
 
 ```
+* 说明
+  * 菜单：使用"menu:"为前缀
+  * server: 使用"server:"为前缀
+  * server+sshuser: 使用"|"为分隔
+
 
 ## 运维
 ### 运行
