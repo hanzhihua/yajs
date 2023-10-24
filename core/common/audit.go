@@ -135,7 +135,7 @@ func (w *AduitWriter) Write(p []byte) (n int, err error) {
 	}else{
 		w.file.Write(p);
 	}
-	utils.Logger.Warningf(string(p))
+	//utils.Logger.Warningf(string(p))
 	return (*w.frontSess).Write(p)
 }
 

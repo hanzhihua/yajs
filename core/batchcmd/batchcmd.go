@@ -61,6 +61,6 @@ func runCMD(sess *ssh.Session,host,cmd string) error{
 	if err != nil {
 		return err
 	}
-	utils.Logger.Infof("%s in %s run was sucessful,result:%s",cmd,host,string(bs))
+	utils.Logger.Infof("%s in %s run was sucessful,result:%t",cmd,host,bs)
 	return nil
 }
