@@ -2,9 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/gliderlabs/ssh"
-	"github.com/manifoldco/promptui"
 	"io"
 	"sort"
 	"strings"
@@ -13,6 +10,10 @@ import (
 	"yajs/core/client"
 	"yajs/core/jumpserver"
 	"yajs/utils"
+
+	"github.com/fatih/color"
+	"github.com/gliderlabs/ssh"
+	"github.com/manifoldco/promptui"
 )
 
 var (
@@ -84,10 +85,10 @@ func batchCMDSelect() func(index int, menuItem *MenuItem, sess *ssh.Session, sel
 		if err != nil {
 			return err
 		}
-		err =  batchcmd.BatchRunCMD(sess, cmdFile)
-		if err == nil{
+		err = batchcmd.BatchRunCMD(sess, cmdFile)
+		if err == nil {
 			green := color.New(color.FgGreen)
-			green.Fprint(*sess, fmt.Sprintf("%s execute successfully",cmdFile))
+			green.Fprint(*sess, fmt.Sprintf("%s execute successfully", cmdFile))
 		}
 		return err
 	}
@@ -104,7 +105,7 @@ func getServerItem(server *config.Server, session *ssh.Session) *MenuItem {
 		if err != nil {
 			return err
 		}
-		utils.Logger.Warningf("theSshUser:%v", theSshUser)
+		utils.Logger.Warningf("theSshUser:%v", theSshUser.Username)
 		err = client.NewTerminal(menuItem.Value.(*config.Server), theSshUser, sess)
 		return err
 	}
