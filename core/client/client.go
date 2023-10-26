@@ -1,16 +1,14 @@
 package client
 
 import (
-	"errors"
 	"fmt"
-	"github.com/gliderlabs/ssh"
 	"net"
-	"strings"
 	"yajs/config"
 	"yajs/core/common"
 	"yajs/utils"
 
-	"github.com/fatih/color"
+	"github.com/gliderlabs/ssh"
+
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -27,7 +25,7 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	defer upstreamSess.Close()
 
 	writer := common.GetWriter(sess)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	upstreamSess.Stdout = writer
@@ -36,7 +34,7 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 
 	pty, winCh, _ := (*sess).Pty()
 
-	utils.Logger.Warningf("pty term:%v,window:%v,",pty.Term, pty.Window)
+	utils.Logger.Warningf("pty term:%v,window:%v,", pty.Term, pty.Window)
 
 	modes := gossh.TerminalModes{
 		gossh.ECHO:          1,
@@ -56,8 +54,9 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	defer func() {
 		writer.WriteEnd(server.Name)
 	}()
-	go func () {
+	go func() {
 		for win := range winCh {
+			utils.Logger.Warningf("win change,height:%d,width:%d", win.Height, win.Width)
 			upstreamSess.WindowChange(win.Height, win.Width)
 		}
 	}()
@@ -68,7 +67,6 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 
 	return nil
 }
-
 
 func NewSSHClient(server *config.Server, sshUser *config.SSHUser) (*gossh.Client, error) {
 
@@ -87,37 +85,10 @@ func NewSSHClient(server *config.Server, sshUser *config.SSHUser) (*gossh.Client
 	}
 
 	addr := fmt.Sprintf("%s:%d", server.IP, server.Port)
-	utils.Logger.Infof("dial tcp address:%s",addr)
+	utils.Logger.Infof("dial tcp address:%s", addr)
 	client, err := gossh.Dial("tcp", addr, config)
 	if err != nil {
 		return nil, err
 	}
 	return client, nil
-}
-
-// ParseRawCommand ParseRawCommand
-func ParseRawCommand(command string) (string, []string, error) {
-	parts := strings.Split(command, " ")
-
-	if len(parts) < 1 {
-		return "", nil, errors.New("No command in payload: " + command)
-	}
-
-	if len(parts) < 2 {
-		return parts[0], []string{}, nil
-	}
-
-	return parts[0], parts[1:], nil
-}
-
-// ErrorInfo ErrorInfo
-func ErrorInfo(err error, sess *ssh.Session) {
-	read := color.New(color.FgRed)
-	read.Fprint(*sess, fmt.Sprintf("%s\n", err))
-}
-
-// Info Info
-func Info(msg string, sess *ssh.Session) {
-	green := color.New(color.FgGreen)
-	green.Fprint(*sess, msg)
 }

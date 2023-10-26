@@ -44,6 +44,9 @@ func BatchRunCMD(sess *ssh.Session,cmdFile string) error{
 
 func runCMD(sess *ssh.Session,host,cmd string) error{
 	server := config.Instance.GetServerByName(&host)
+	if server == nil{
+		return errors.New(fmt.Sprintf("%s is not a valid host",host))
+	}
 	sshuer,err := config.Instance.GetSshUser(sess,host)
 	if err != nil{
 		return err
