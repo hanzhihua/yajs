@@ -7,8 +7,8 @@ import (
 	gossh "golang.org/x/crypto/ssh"
 	"os"
 	"time"
-	"yajs/config"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 var (

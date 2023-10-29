@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 var (

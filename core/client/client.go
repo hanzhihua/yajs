@@ -3,9 +3,9 @@ package client
 import (
 	"fmt"
 	"net"
-	"yajs/config"
-	"yajs/core/common"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/core/common"
+	"github.com/hanzhihua/yajs/utils"
 
 	"github.com/gliderlabs/ssh"
 

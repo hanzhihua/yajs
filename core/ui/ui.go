@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/utils"
 
 	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"

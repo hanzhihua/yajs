@@ -10,9 +10,9 @@ import (
 	"os/user"
 	"strconv"
 	"syscall"
-	"yajs/config"
-	"yajs/core/common"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/core/common"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func Enter(sess *ssh.Session) error{

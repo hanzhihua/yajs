@@ -5,8 +5,8 @@ import (
 	ecs "github.com/alibabacloud-go/ecs-20140526/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
 	"os"
-	"yajs/config"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func getAllServer() ([]*config.Server,error){

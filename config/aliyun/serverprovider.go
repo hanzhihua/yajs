@@ -1,7 +1,7 @@
 package aliyun
 
 import (
-	"yajs/config"
+	"github.com/hanzhihua/yajs/config"
 )
 
 type AliyunServerProvider struct {}

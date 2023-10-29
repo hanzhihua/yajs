@@ -7,9 +7,9 @@ import (
 	"github.com/gliderlabs/ssh"
 	"os"
 	"strings"
-	"yajs/config"
-	"yajs/core/client"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/core/client"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func BatchRunCMD(sess *ssh.Session,cmdFile string) error{

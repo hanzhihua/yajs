@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func TestReadFrom(t *testing.T) {

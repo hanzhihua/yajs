@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"yajs/config"
-	_ "yajs/config/aliyun"
-	"yajs/core/common"
-	"yajs/core/ui"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	_ "github.com/hanzhihua/yajs/config/aliyun"
+	"github.com/hanzhihua/yajs/core/common"
+	"github.com/hanzhihua/yajs/core/ui"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func Run(){

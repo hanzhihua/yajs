@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"yajs/config"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 func trapSignals() {

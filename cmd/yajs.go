@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"runtime"
-	"yajs/core"
-	"yajs/utils"
+	"github.com/hanzhihua/yajs/core"
+	"github.com/hanzhihua/yajs/utils"
 )
 
 
@@ -17,7 +17,7 @@ var (
 func init() {
 	flag.BoolVar(&showHelp, "help", false, "Show help")
 	flag.IntVar(&utils.Port,"p", 2222, "Port")
-	defaultConfigDir := fmt.Sprintf("%s%s", utils.ProcUser.HomeDir, "/yajs/")
+	defaultConfigDir := fmt.Sprintf("%s%s", utils.ProcUser.HomeDir, "/github.com/hanzhihua/yajs/")
 	flag.StringVar(&utils.ConfigDir,"c",defaultConfigDir,"Config Directory")
 	flag.IntVar(&utils.SshIdleTimeout,"ssh.idletimeout",120,"Ssh idletimeout")
 	flag.Parse()

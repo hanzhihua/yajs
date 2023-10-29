@@ -1,4 +1,4 @@
-module yajs
+module github.com/hanzhihua/yajs
 
 go 1.20
 
@@ -15,7 +15,6 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
-	github.com/shirou/gopsutil/v3 v3.23.9
 	golang.org/x/crypto v0.10.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -33,22 +32,16 @@ require (
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
-	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tjfoc/gmsm v1.3.2 // indirect
-	github.com/tklauser/go-sysconf v0.3.12 // indirect
-	github.com/tklauser/numcpus v0.6.1 // indirect
-	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	golang.org/x/net v0.11.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
