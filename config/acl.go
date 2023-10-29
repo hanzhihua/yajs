@@ -2,8 +2,8 @@ package config
 
 import (
 	"github.com/casbin/casbin/v2"
-	"strings"
 	"github.com/hanzhihua/yajs/utils"
+	"strings"
 )
 
 func NewEnforcer() (*casbin.Enforcer,error){

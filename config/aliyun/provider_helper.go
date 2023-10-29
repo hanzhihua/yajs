@@ -4,9 +4,9 @@ import (
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	ecs "github.com/alibabacloud-go/ecs-20140526/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
-	"os"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/utils"
+	"os"
 )
 
 func getAllServer() ([]*config.Server,error){

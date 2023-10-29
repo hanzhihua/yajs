@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gliderlabs/ssh"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/utils"
 	gossh "golang.org/x/crypto/ssh"
 	"os"
 	"time"
-	"github.com/hanzhihua/yajs/config"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 var (

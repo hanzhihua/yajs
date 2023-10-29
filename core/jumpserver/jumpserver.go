@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/creack/pty"
 	"github.com/gliderlabs/ssh"
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/core/common"
+	"github.com/hanzhihua/yajs/utils"
 	"io"
 	"os"
 	"os/exec"
 	"os/user"
 	"strconv"
 	"syscall"
-	"github.com/hanzhihua/yajs/config"
-	"github.com/hanzhihua/yajs/core/common"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 func Enter(sess *ssh.Session) error{

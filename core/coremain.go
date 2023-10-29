@@ -1,11 +1,11 @@
 package core
 
 import (
-	"os"
 	"github.com/hanzhihua/yajs/config"
 	_ "github.com/hanzhihua/yajs/config/aliyun"
 	"github.com/hanzhihua/yajs/core/server"
 	"github.com/hanzhihua/yajs/utils"
+	"os"
 )
 
 

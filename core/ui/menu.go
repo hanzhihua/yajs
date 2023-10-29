@@ -2,14 +2,14 @@ package ui
 
 import (
 	"fmt"
-	"io"
-	"sort"
-	"strings"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/batchcmd"
 	"github.com/hanzhihua/yajs/core/client"
 	"github.com/hanzhihua/yajs/core/jumpserver"
 	"github.com/hanzhihua/yajs/utils"
+	"io"
+	"sort"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"

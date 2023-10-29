@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/casbin/casbin/v2"
 	"github.com/gliderlabs/ssh"
+	"github.com/hanzhihua/yajs/utils"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strings"
 	"sync"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 var (

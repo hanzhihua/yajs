@@ -3,8 +3,8 @@ package ui
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"github.com/hanzhihua/yajs/utils"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gliderlabs/ssh"

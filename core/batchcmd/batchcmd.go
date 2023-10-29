@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gliderlabs/ssh"
-	"os"
-	"strings"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/client"
 	"github.com/hanzhihua/yajs/utils"
+	"os"
+	"strings"
 )
 
 func BatchRunCMD(sess *ssh.Session,cmdFile string) error{

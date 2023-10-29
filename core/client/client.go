@@ -2,10 +2,10 @@ package client
 
 import (
 	"fmt"
-	"net"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/utils"
+	"net"
 
 	"github.com/gliderlabs/ssh"
 

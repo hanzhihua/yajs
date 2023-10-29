@@ -1,11 +1,11 @@
 package core
 
 import (
+	"github.com/hanzhihua/yajs/config"
+	"github.com/hanzhihua/yajs/utils"
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/hanzhihua/yajs/config"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 func trapSignals() {

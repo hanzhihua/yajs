@@ -2,11 +2,11 @@ package config
 
 import (
 	"github.com/gliderlabs/ssh"
+	"github.com/hanzhihua/yajs/utils"
 	gossh "golang.org/x/crypto/ssh"
 	"os"
 	"path/filepath"
 	"testing"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 func TestReadFrom(t *testing.T) {

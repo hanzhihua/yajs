@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"runtime"
 	"github.com/hanzhihua/yajs/core"
 	"github.com/hanzhihua/yajs/utils"
+	"runtime"
 )
 
 
