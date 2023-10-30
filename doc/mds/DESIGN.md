@@ -18,4 +18,4 @@ openssh来实现）。
 
 
 ### 背景知识
-[ssh协议](doc/mds/SSHPROT.md).
+[ssh协议](SSHPROT.md).
