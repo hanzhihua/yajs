@@ -178,8 +178,7 @@ func readFrom(path string) (*Config,error) {
 }
 
 func Reload() error{
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
+
 	utils.Logger.Warningf("reload config")
 	tmpConf,err := readFromDefault()
 	if err != nil{
@@ -193,6 +192,10 @@ func Reload() error{
 		utils.Logger.Errorf("reloading has error:%v",err)
 		return err
 	}
+
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
+
 	Instance = tmpConf
 	enforcer = tmpEnforcer
 	utils.Logger.Infof("reload config:%v finish", Instance)

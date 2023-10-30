@@ -15,3 +15,7 @@ openssh来实现）。
 ### 安全
 * 登录：目前系统只实现pubkey登录
 * 鉴权：使用casbin的表达式方式，来处理user、server、sshuser三者权限关系
+
+
+### 背景知识
+[ssh协议](doc/mds/SSHPROT.md).

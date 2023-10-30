@@ -99,7 +99,9 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 				ErrorInfo(selected.Label+" has error:", err, uiService.Session)
 			}
 			scrollPosition = menuPui.ScrollPosition()
-			(*uiService.Session).Write([]byte("j"))
+			//(*uiService.Session).r([]byte("j"))
+			//menuPui.
+			//io.Copy(*uiService.Session,[]byte("j"))
 		}
 	}
 }
