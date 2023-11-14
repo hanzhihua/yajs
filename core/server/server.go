@@ -114,7 +114,10 @@ func GetRealName(ctx ssh.Context) (*string,error){
 		users :=strings.Split(username,utils.SshUserFlag)
 		username = users[0]
 		sshuser := users[1]
-		ctx.SetValue(utils.SSHUSER_KEY,&sshuser)
+		if sshuser != ""{
+			ctx.SetValue(utils.SSHUSER_KEY,&sshuser)
+		}
+
 		if len(users) == 3{
 			idle_t,err := strconv.Atoi(users[2])
 			if err == nil{
