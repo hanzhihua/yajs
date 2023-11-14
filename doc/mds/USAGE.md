@@ -145,6 +145,8 @@ yajs登录名包括以下三个方式：
   *  如：zhangshan
   * ssh用户名，会自动选择一个权限最高的用户，比如zhangshan对node1有root、web权限，那么会使用root用户
 * 指定ssh用户名登录
-  * 如：zhangshan@@@root，使用三个@作为分隔符
+  * 如：zhangshan@@@root
+  * 使用三个@作为分隔符,前面是yajs的用户名，后面是ssh用户名
 * 指定ssh用户名并设置空闲超时时间登录
-  * 如：zhangshan@@@root@@@10，使用三个@作为分隔符，超时时间是秒为单位
+  * 如：zhangshan@@@root@@@10
+  * 使用三个@作为分隔符，前面是yajs的用户名，中间是ssh用户名，最后是超时时间，单位为秒
