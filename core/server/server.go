@@ -13,10 +13,14 @@ import (
 	"github.com/hanzhihua/yajs/utils"
 	"net"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
+	gossh "golang.org/x/crypto/ssh"
+	"unsafe"
 )
+
 
 func Run(){
 
@@ -36,11 +40,15 @@ func Run(){
 				common.GetWriter(&sess).WriteExist(false)
 			}
 		}()
+
 		_,err := common.NewWriter(&sess)
 		if err != nil{
 			utils.Logger.Errorf("it occur error :%v, when generated aduit log ",err)
 			return
 		}
+
+		changeIdleTimeout(sess)
+
 		utils.PrintBannerWithUsername(sess,sess.User())
 		uiService := ui.UIService{Session:&sess}
 		uiService.ShowUI()
@@ -107,6 +115,14 @@ func GetRealName(ctx ssh.Context) (*string,error){
 		username = users[0]
 		sshuser := users[1]
 		ctx.SetValue(utils.SSHUSER_KEY,&sshuser)
+		if len(users) == 3{
+			idle_t,err := strconv.Atoi(users[2])
+			if err == nil{
+				ctx.SetValue(utils.IDILTIMEOUT_KEY,idle_t)
+			}else{
+				utils.Logger.Warningf("%s is not integer",users[2])
+			}
+		}
 		return &username,nil
 	}else{
 		return &username,nil
@@ -134,6 +150,15 @@ func printBanner(sess *ssh.Session){
 	color.Fprint((*sess), fmt.Sprintf("\n当前登陆用户名: %s\n", (*sess).User()))
 }
 
+func GetUnexportedField(field reflect.Value) reflect.Value {
+	return reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem()
+}
+
+func SetUnexportedField(field reflect.Value, value interface{}) {
+	reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).
+		Elem().
+		Set(reflect.ValueOf(value))
+}
 
 
 //func warpConn(ctx ssh.Context, conn net.Conn) net.Conn{
@@ -151,4 +176,59 @@ func printBanner(sess *ssh.Session){
 //	utils.Logger.Warningf("yajs conn close")
 //	return yajsConn.Conn.Close()
 //
+//}
+
+func changeIdleTimeout(sess ssh.Session){
+
+	defer func() {
+		if r := recover(); r != nil {
+			utils.Logger.Warningf("r:%v",r)
+		}
+	}()
+
+	//idleTimeout := getIdleTimeout(sess)
+	//if idleTimeout == nil{
+	//	return
+	//}
+	//
+	//idleTimeoutInt,err := strconv.Atoi(*idleTimeout)
+	//if err != nil{
+	//	utils.Logger.Warningf("idleTimeout %s,err:%v",*idleTimeout,err)
+	//}
+
+	ctx := sess.Context()
+
+	idleTimeoutInt,ok := ctx.Value(utils.IDILTIMEOUT_KEY).(int)
+	if !ok{
+		return
+	}
+
+	serverConn,ok := ctx.Value(ssh.ContextKeyConn).(*gossh.ServerConn)
+	sess.Environ()
+	if ok{
+		value := reflect.ValueOf(serverConn.Conn)
+		value = value.Elem()
+		value = value.FieldByName("sshConn")
+		value = value.FieldByName("conn")
+		value = GetUnexportedField(value)
+		v := value.Interface()
+		value = reflect.ValueOf(v).Elem()
+		value = value.FieldByName("idleTimeout")
+		var d = (*time.Duration)(unsafe.Pointer(value.UnsafeAddr()))
+		*d = (time.Duration(idleTimeoutInt) * time.Second)
+	}else{
+		utils.Logger.Warningf("conn is not server conn,%v",serverConn)
+	}
+}
+
+//func getIdleTimeout(sess ssh.Session) *string{
+//	for _,envItem :=  range sess.Environ(){
+//		strs := strings.Split(envItem,"=")
+//		if len(strs) == 2{
+//			if strs[0] == "idle_timeout"{
+//				return &strs[1]
+//			}
+//		}
+//	}
+//	return nil
 //}

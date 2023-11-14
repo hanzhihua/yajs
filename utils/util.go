@@ -25,6 +25,7 @@ const (
 	USER_KEY = "user_key"
 	SERVER_KEY = "server_key"
 	SSHUSER_KEY = "sshuser_key"
+	IDILTIMEOUT_KEY = "idiltimeout_key"
 	WRITER_KEY = "writer_key"
 	Default_SSH_PORT = 22
 	SERVER_PREFIX = "server:"
