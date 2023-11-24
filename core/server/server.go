@@ -11,13 +11,13 @@ import (
 	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/core/ui"
 	"github.com/hanzhihua/yajs/utils"
+	gossh "golang.org/x/crypto/ssh"
 	"net"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
-	gossh "golang.org/x/crypto/ssh"
 	"unsafe"
 )
 
@@ -31,26 +31,27 @@ func Run(){
 		os.Exit(2)
 	}
 	ssh.Handle(func(sess ssh.Session) {
-		defer func() {
-			sess.Exit(0)
-			if r := recover(); r != nil {
-				utils.PrintStackTrace()
-				common.GetWriter(&sess).WriteExist(true)
-			}else{
-				common.GetWriter(&sess).WriteExist(false)
-			}
-		}()
-
-		_,err := common.NewWriter(&sess)
+		yasess := common.NewYajsSession(&sess)
+		_,err := common.NewAduitIO(yasess)
 		if err != nil{
 			utils.Logger.Errorf("it occur error :%v, when generated aduit log ",err)
 			return
 		}
+		defer func() {
+			sess.Exit(0)
+			if r := recover(); r != nil {
+				utils.PrintStackTrace()
+				common.GetAduitIO(yasess).WriteExist(true)
+			}else{
+				common.GetAduitIO(yasess).WriteExist(false)
+			}
+		}()
 
-		changeIdleTimeout(sess)
 
-		utils.PrintBannerWithUsername(sess,sess.User())
-		uiService := ui.UIService{Session:&sess}
+		changeIdleTimeout(yasess)
+
+		utils.PrintBannerWithUsername(yasess,yasess.User())
+		uiService := ui.UIService{Session:yasess}
 		uiService.ShowUI()
 	})
 
@@ -164,22 +165,7 @@ func SetUnexportedField(field reflect.Value, value interface{}) {
 }
 
 
-//func warpConn(ctx ssh.Context, conn net.Conn) net.Conn{
-//
-//	return &yajsConn{conn}
-//}
-//
-//type yajsConn struct {
-//	net.Conn
-//}
-//
-//func (yajsConn *yajsConn)Close() error{
-//	s := string(debug.Stack())
-//	utils.Logger.Errorf("print stack:\n%s",s)
-//	utils.Logger.Warningf("yajs conn close")
-//	return yajsConn.Conn.Close()
-//
-//}
+
 
 func changeIdleTimeout(sess ssh.Session){
 

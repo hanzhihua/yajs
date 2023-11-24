@@ -5,14 +5,11 @@ import (
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/utils"
-	"net"
-
-	"github.com/gliderlabs/ssh"
-
 	gossh "golang.org/x/crypto/ssh"
+	"net"
 )
 
-func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Session) error {
+func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *common.YajsSession) error {
 	upstreamClient, err := NewSSHClient(server, sshUser)
 	if err != nil {
 		return err
@@ -24,10 +21,39 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	}
 	defer upstreamSess.Close()
 
-	writer := common.GetWriter(sess)
+	writer := common.GetAduitIO(sess)
 	if err != nil {
 		return err
 	}
+
+
+	////ir := common.NewCancelableStdin(writer)
+	//
+	//stdin, err := upstreamSess.StdinPipe()
+	//if err != nil {
+	//	return err
+	//}
+	//go func(){
+	//	_,err := io.Copy(stdin, writer)
+	//	if err != nil{
+	//		writer.SetRepeat()
+	//	}
+	//
+	//}()
+	//
+	//stdout, err := upstreamSess.StdoutPipe()
+	//if err != nil {
+	//	return err
+	//}
+	//go io.Copy(writer, stdout)
+	//
+	//stderr, err := upstreamSess.StderrPipe()
+	//if err != nil {
+	//	return err
+	//}
+	//go io.Copy(writer,stderr)
+
+
 	upstreamSess.Stdout = writer
 	upstreamSess.Stdin = writer
 	upstreamSess.Stderr = writer
@@ -64,7 +90,6 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *ssh.Sessi
 	if err := upstreamSess.Wait(); err != nil {
 		return err
 	}
-
 	return nil
 }
 

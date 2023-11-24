@@ -2,18 +2,20 @@ package ui
 
 import (
 	"fmt"
+	"github.com/fatih/color"
+	"github.com/gliderlabs/ssh"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/batchcmd"
 	"github.com/hanzhihua/yajs/core/client"
+	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/core/jumpserver"
 	"github.com/hanzhihua/yajs/utils"
-	"io"
+	"github.com/manifoldco/promptui"
+	_ "golang.org/x/crypto/ssh"
+	"reflect"
 	"sort"
 	"strings"
-
-	"github.com/fatih/color"
-	"github.com/gliderlabs/ssh"
-	"github.com/manifoldco/promptui"
+	"unsafe"
 )
 
 var (
@@ -26,16 +28,16 @@ var (
 type MenuItem struct {
 	Id                string
 	Label             string
-	IsShow            func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) bool
-	GetSubMenu        func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) *[]*MenuItem
-	SelectedFunc      func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error
+	IsShow            func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) bool
+	GetSubMenu        func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) *[]*MenuItem
+	SelectedFunc      func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error
 	BackAfterSelected bool
 	Value             any
 }
 
-func defaultShow(int, *MenuItem, *ssh.Session, []*MenuItem) bool { return true }
+func defaultShow(int, *MenuItem, *common.YajsSession, []*MenuItem) bool { return true }
 
-func serverShow(index int, item *MenuItem, session *ssh.Session, items []*MenuItem) bool {
+func serverShow(index int, item *MenuItem, session *common.YajsSession, items []*MenuItem) bool {
 	server, ok := item.Value.(*config.Server)
 	if ok {
 		ctx := (*session).Context()
@@ -50,7 +52,7 @@ func serverShow(index int, item *MenuItem, session *ssh.Session, items []*MenuIt
 	return true
 }
 
-func menuShow(index int, item *MenuItem, session *ssh.Session, items []*MenuItem) bool {
+func menuShow(index int, item *MenuItem, session *common.YajsSession, items []*MenuItem) bool {
 	ctx := (*session).Context()
 	user := ctx.Value(utils.USER_KEY).(*config.User)
 	b, err := config.CanAssessMenu(user.Username, item.Id)
@@ -61,8 +63,8 @@ func menuShow(index int, item *MenuItem, session *ssh.Session, items []*MenuItem
 	}
 }
 
-func GetServersMenu() func(int, *MenuItem, *ssh.Session, []*MenuItem) *[]*MenuItem {
-	return func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) *[]*MenuItem {
+func GetServersMenu() func(int, *MenuItem, *common.YajsSession, []*MenuItem) *[]*MenuItem {
+	return func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) *[]*MenuItem {
 		menuItems := make([]*MenuItem, 0)
 		servers := config.Instance.Servers
 		sort.Slice(servers, func(i, j int) bool {
@@ -78,9 +80,9 @@ func GetServersMenu() func(int, *MenuItem, *ssh.Session, []*MenuItem) *[]*MenuIt
 	}
 }
 
-func batchCMDSelect() func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error {
-	return func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error {
-		cmdFilePui := cmdFilePrompt("", *sess)
+func batchCMDSelect() func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error {
+	return func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error {
+		cmdFilePui := cmdFilePrompt("", sess)
 		cmdFile, err := cmdFilePui.Run()
 		if err != nil {
 			return err
@@ -94,19 +96,20 @@ func batchCMDSelect() func(index int, menuItem *MenuItem, sess *ssh.Session, sel
 	}
 }
 
-func getServerItem(server *config.Server, session *ssh.Session) *MenuItem {
+func getServerItem(server *config.Server, session *common.YajsSession) *MenuItem {
 	menuItem := new(MenuItem)
 	menuItem.Label = fmt.Sprintf("%s %s:%d", server.Name, server.IP, server.Port)
 	menuItem.Value = server
 	menuItem.IsShow = serverShow
-	menuItem.SelectedFunc = func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error {
+	menuItem.SelectedFunc = func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error {
 
-		theSshUser, err := config.Instance.GetSshUser(session, menuItem.Value.(*config.Server).Name)
+		theSshUser, err := config.Instance.GetSshUser(&session.Session, menuItem.Value.(*config.Server).Name)
 		if err != nil {
 			return err
 		}
 		utils.Logger.Warningf("theSshUser:%v", theSshUser.Username)
 		err = client.NewTerminal(menuItem.Value.(*config.Server), theSshUser, sess)
+		//signal(sess)
 		return err
 	}
 	return menuItem
@@ -139,19 +142,19 @@ func init() {
 	}
 }
 
-func enterJumpServer() func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error {
-	return func(index int, menuItem *MenuItem, sess *ssh.Session, selectedChain []*MenuItem) error {
+func enterJumpServer() func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error {
+	return func(index int, menuItem *MenuItem, sess *common.YajsSession, selectedChain []*MenuItem) error {
 		return jumpserver.Enter(sess)
 	}
 }
 
-var cmdFilePrompt = func(defaultShow string, stdio io.ReadWriteCloser) promptui.Prompt {
+var cmdFilePrompt = func(defaultShow string, sess *common.YajsSession) promptui.Prompt {
 	return promptui.Prompt{
 		Label:    "请输入命令文件",
 		Validate: FileRequired("命令文件"),
 		Default:  defaultShow,
-		Stdin:    stdio,
-		Stdout:   stdio,
+		Stdin:    sess,
+		Stdout:   sess,
 	}
 }
 
@@ -167,3 +170,28 @@ func FileRequired(field string) func(string) error {
 		return nil
 	}
 }
+
+func signal(sess *ssh.Session){
+	value := reflect.ValueOf(sess)
+	value = value.Elem()
+	v := value.Interface()
+	value = reflect.ValueOf(v).Elem()
+	value = value.FieldByName("Channel")
+	value = reflect.ValueOf(value.Interface()).Elem()
+	value = value.FieldByName("pending")
+	value = GetUnexportedField(value)
+	//value = value.Elem()
+	private_write(value.Interface(),[]byte(" "))
+	//value = value.MethodByName("write")
+	//value.Call([]reflect.Value{reflect.ValueOf([]byte(" "))})
+	//value = value.FieldByName("Cond")
+	//value = GetUnexportedField(value)
+	//value.Interface().(*sync.Cond).Signal()
+}
+
+func GetUnexportedField(field reflect.Value) reflect.Value {
+	return reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem()
+}
+
+//go:linkname private_write golang.org/x/crypto/ssh.(*buffer).write
+func private_write(b interface{},buf []byte)

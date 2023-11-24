@@ -4,15 +4,15 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/gliderlabs/ssh"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/client"
+	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/utils"
 	"os"
 	"strings"
 )
 
-func BatchRunCMD(sess *ssh.Session,cmdFile string) error{
+func BatchRunCMD(sess *common.YajsSession,cmdFile string) error{
 	readFile, err := os.Open(cmdFile)
 	if err != nil {
 		return err
@@ -42,12 +42,12 @@ func BatchRunCMD(sess *ssh.Session,cmdFile string) error{
 	return nil
 }
 
-func runCMD(sess *ssh.Session,host,cmd string) error{
+func runCMD(sess *common.YajsSession,host,cmd string) error{
 	server := config.Instance.GetServerByName(&host)
 	if server == nil{
 		return errors.New(fmt.Sprintf("%s is not a valid host",host))
 	}
-	sshuer,err := config.Instance.GetSshUser(sess,host)
+	sshuer,err := config.Instance.GetSshUser(&sess.Session,host)
 	if err != nil{
 		return err
 	}

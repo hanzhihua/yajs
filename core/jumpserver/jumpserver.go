@@ -3,7 +3,6 @@ package jumpserver
 import (
 	"fmt"
 	"github.com/creack/pty"
-	"github.com/gliderlabs/ssh"
 	"github.com/hanzhihua/yajs/config"
 	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/utils"
@@ -15,7 +14,7 @@ import (
 	"syscall"
 )
 
-func Enter(sess *ssh.Session) error{
+func Enter(sess *common.YajsSession) error{
 	shell := os.Getenv("SHELL")
 	if shell == ""{
 		shell = "/bin/bash"
@@ -25,7 +24,7 @@ func Enter(sess *ssh.Session) error{
 	p, winCh, isPty := (*sess).Pty()
 	if isPty {
 		cmd.Env = append(cmd.Env,fmt.Sprintf("TERM=%s", p.Term))
-		sshUser,err := config.Instance.GetJumpServerSshUser(sess)
+		sshUser,err := config.Instance.GetJumpServerSshUser(&sess.Session)
 		if err != nil{
 			return err
 		}
@@ -58,7 +57,7 @@ func Enter(sess *ssh.Session) error{
 				//setWinsize(f, win.Width, win.Height)
 			}
 		}()
-		writer := common.GetWriter(sess)
+		writer := common.GetAduitIO(sess)
 		writer.BeginWrite("jumpserver")
 		defer func() {
 			writer.WriteEnd("jumpserver")

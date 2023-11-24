@@ -3,16 +3,16 @@ package ui
 import (
 	"errors"
 	"fmt"
+	"github.com/hanzhihua/yajs/core/common"
 	"github.com/hanzhihua/yajs/utils"
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/gliderlabs/ssh"
 	"github.com/manifoldco/promptui"
 )
 
 type UIService struct {
-	Session *ssh.Session
+	Session *common.YajsSession
 }
 
 func (uiService *UIService) ShowUI() {
@@ -25,9 +25,11 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 	var index, backIndex,scrollPosition int
 	var subMenuLabel string
 	var err error
-	menuLabels := make([]string, 0)
-	menuItems := make([]*MenuItem, 0)
+	//menuLabels := make([]string, 0)
+	//menuItems := make([]*MenuItem, 0)
 	for {
+		menuLabels := make([]string, 0)
+		menuItems := make([]*MenuItem, 0)
 		if menus == nil {
 			utils.Logger.Warningf("menus is nil")
 			break
@@ -60,10 +62,11 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 		menuPui = &promptui.Select{
 			Label:     label,
 			Items:     menuLabels,
-			Stdin:     *uiService.Session,
-			Stdout:    *uiService.Session,
+			Stdin:     uiService.Session,
+			Stdout:    uiService.Session,
 			Templates: templates,
 			Searcher:  searcher,
+			HideSelected: true,
 			Size:      10,
 		}
 
@@ -94,19 +97,19 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 		} else if selected.SelectedFunc != nil {
 			selectedChain = append(selectedChain, selected)
 			err := selected.SelectedFunc(index, selected, uiService.Session, selectedChain)
+			//uiService.Session.SetRepeat()
 			if err != nil {
 				utils.Logger.Errorf("Run selected func err: %v", err)
 				ErrorInfo(selected.Label+" has error:", err, uiService.Session)
 			}
 			scrollPosition = menuPui.ScrollPosition()
-			//(*uiService.Session).r([]byte("j"))
-			//menuPui.
-			//io.Copy(*uiService.Session,[]byte("j"))
+		} else{
+			utils.Logger.Errorf("%s have no function ",selected.Label)
 		}
 	}
 }
 
-func ErrorInfo(prefix string, err error, sess *ssh.Session) {
+func ErrorInfo(prefix string, err error, sess *common.YajsSession) {
 	read := color.New(color.FgRed)
 	// read.Fprint(*sess, fmt.Sprintf("%s %s\n", prefix,err))
 	read.Fprint(*sess, fmt.Sprintf("%s \n", err))

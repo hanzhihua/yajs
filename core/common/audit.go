@@ -43,17 +43,17 @@ var (
 	ZModemCancel = []byte{24, 24, 24, 24, 24, 8, 8, 8, 8, 8}
 )
 
-type AduitWriter struct {
-	frontSess *ssh.Session
+type AduitIO struct {
+	frontSess *YajsSession
 	backSess *gossh.Session
 	file *os.File
 	rz           bool
 	sz           bool
 }
 
-func NewWriter(sess *ssh.Session) (*AduitWriter,error){
+func NewAduitIO(sess *YajsSession) (*AduitIO,error){
 
-	writer := &AduitWriter{
+	writer := &AduitIO{
 		frontSess: sess,
 		backSess: nil,
 	}
@@ -74,8 +74,8 @@ func NewWriter(sess *ssh.Session) (*AduitWriter,error){
 	}
 }
 
-func GetWriter(sess *ssh.Session) *AduitWriter {
-	writer,ok:=(*sess).Context().Value(utils.WRITER_KEY).(*AduitWriter)
+func GetAduitIO(sess *YajsSession) *AduitIO {
+	writer,ok:=(*sess).Context().Value(utils.WRITER_KEY).(*AduitIO)
 	if ok{
 		return writer
 	}else{
@@ -83,25 +83,25 @@ func GetWriter(sess *ssh.Session) *AduitWriter {
 	}
 }
 
-func (w *AduitWriter) BeginWrite(serverName string) (n int, err error) {
+func (w *AduitIO) BeginWrite(serverName string) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
 	content := fmt.Sprintf(serverName+" begin==========================%s===========================\n",timestr)
 	return w.file.Write([]byte(content));
 }
 
-func (w *AduitWriter) WriteEnd(serverName string) (n int, err error) {
+func (w *AduitIO) WriteEnd(serverName string) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
 	content := fmt.Sprintf(serverName+" end==========================%s===========================\n\n\n",timestr)
 	return w.file.Write([]byte(content));
 }
 
-func (w *AduitWriter) WriteExist(panic bool) (n int, err error) {
+func (w *AduitIO) WriteExist(panic bool) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
 	content := fmt.Sprintf("Panic:%t,Exist==========================%s===========================\n\n\n",panic,timestr)
 	return w.file.Write([]byte(content));
 }
 
-func (w *AduitWriter) Write(p []byte) (n int, err error) {
+func (w *AduitIO) Write(p []byte) (n int, err error) {
 
 	if !w.sz && !w.rz {
 		if bytes.Contains(p,ZModemSZStart){
@@ -139,8 +139,12 @@ func (w *AduitWriter) Write(p []byte) (n int, err error) {
 	return (*w.frontSess).Write(p)
 }
 
-func (w *AduitWriter) Read(p []byte) (n int, err error) {
+func (w *AduitIO) Read(p []byte) (n int, err error) {
 	n, err = (*w.frontSess).Read(p)
 	return n, err
+}
+
+func(w *AduitIO)SetRepeat(){
+	(*w.frontSess).SetRepeat()
 }
 
