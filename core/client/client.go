@@ -21,42 +21,15 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *common.Ya
 	}
 	defer upstreamSess.Close()
 
-	writer := common.GetAduitIO(sess)
+	aduitIO := common.GetAduitIO(sess)
 	if err != nil {
 		return err
 	}
 
 
-	////ir := common.NewCancelableStdin(writer)
-	//
-	//stdin, err := upstreamSess.StdinPipe()
-	//if err != nil {
-	//	return err
-	//}
-	//go func(){
-	//	_,err := io.Copy(stdin, writer)
-	//	if err != nil{
-	//		writer.SetRepeat()
-	//	}
-	//
-	//}()
-	//
-	//stdout, err := upstreamSess.StdoutPipe()
-	//if err != nil {
-	//	return err
-	//}
-	//go io.Copy(writer, stdout)
-	//
-	//stderr, err := upstreamSess.StderrPipe()
-	//if err != nil {
-	//	return err
-	//}
-	//go io.Copy(writer,stderr)
-
-
-	upstreamSess.Stdout = writer
-	upstreamSess.Stdin = writer
-	upstreamSess.Stderr = writer
+	upstreamSess.Stdout = aduitIO
+	upstreamSess.Stdin = aduitIO
+	upstreamSess.Stderr = aduitIO
 
 	pty, winCh, _ := (*sess).Pty()
 
@@ -76,9 +49,9 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *common.Ya
 		return err
 	}
 
-	writer.BeginWrite(server.Name)
+	aduitIO.BeginWrite(server.Name)
 	defer func() {
-		writer.WriteEnd(server.Name)
+		aduitIO.WriteEnd(server.Name)
 	}()
 	go func() {
 		for win := range winCh {

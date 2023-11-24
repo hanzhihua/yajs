@@ -2,12 +2,10 @@ package common
 
 import (
 	"github.com/gliderlabs/ssh"
-	"github.com/hanzhihua/yajs/utils"
 )
 
 type YajsSession struct {
 	ssh.Session
-	repeat bool
 	lastData []byte
 	readCount int
 	notify chan struct{}
@@ -19,11 +17,6 @@ func NewYajsSession(session *ssh.Session) *YajsSession {
 		notify: make(chan struct{}),
 	}
 	return ys
-}
-
-func(ys *YajsSession)SetRepeat(){
-	utils.Logger.Warningf("yajs session SetRepeat")
-	ys.repeat = true
 }
 
 func (ys *YajsSession) Read(b []byte) (n int, err error) {

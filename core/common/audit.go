@@ -144,7 +144,4 @@ func (w *AduitIO) Read(p []byte) (n int, err error) {
 	return n, err
 }
 
-func(w *AduitIO)SetRepeat(){
-	(*w.frontSess).SetRepeat()
-}
 
