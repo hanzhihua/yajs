@@ -69,7 +69,18 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 			HideSelected: true,
 			Size:      10,
 		}
-
+		if backIndex < menuPui.Size{
+			scrollPosition = 0
+		}else{
+			scrollPosition = index -menuPui.Size/2
+			if scrollPosition < 0{
+				scrollPosition = 0
+			}else{
+				if scrollPosition+menuPui.Size/2 > backIndex{
+					scrollPosition = scrollPosition-(menuPui.Size-(backIndex-scrollPosition))
+				}
+			}
+		}
 		index, subMenuLabel, err = menuPui.RunCursorAt(index,scrollPosition)
 
 		if err != nil {
@@ -97,12 +108,10 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 		} else if selected.SelectedFunc != nil {
 			selectedChain = append(selectedChain, selected)
 			err := selected.SelectedFunc(index, selected, uiService.Session, selectedChain)
-			//uiService.Session.SetRepeat()
 			if err != nil {
 				utils.Logger.Errorf("Run selected func err: %v", err)
 				ErrorInfo(selected.Label+" has error:", err, uiService.Session)
 			}
-			scrollPosition = menuPui.ScrollPosition()
 		} else{
 			utils.Logger.Errorf("%s have no function ",selected.Label)
 		}
