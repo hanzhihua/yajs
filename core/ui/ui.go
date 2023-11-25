@@ -25,8 +25,7 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 	var index, backIndex,scrollPosition int
 	var subMenuLabel string
 	var err error
-	//menuLabels := make([]string, 0)
-	//menuItems := make([]*MenuItem, 0)
+
 	for {
 		menuLabels := make([]string, 0)
 		menuItems := make([]*MenuItem, 0)
@@ -69,18 +68,8 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 			HideSelected: true,
 			Size:      10,
 		}
-		if backIndex < menuPui.Size{
-			scrollPosition = 0
-		}else{
-			scrollPosition = index -menuPui.Size/2
-			if scrollPosition < 0{
-				scrollPosition = 0
-			}else{
-				if scrollPosition+menuPui.Size/2 > backIndex{
-					scrollPosition = scrollPosition-(menuPui.Size-(backIndex-scrollPosition))
-				}
-			}
-		}
+		scrollPosition = getScrollPosition(index,backIndex,menuPui.Size)
+
 		index, subMenuLabel, err = menuPui.RunCursorAt(index,scrollPosition)
 
 		if err != nil {
@@ -123,3 +112,17 @@ func ErrorInfo(prefix string, err error, sess *common.YajsSession) {
 	// read.Fprint(*sess, fmt.Sprintf("%s %s\n", prefix,err))
 	read.Fprint(*sess, fmt.Sprintf("%s \n", err))
 }
+
+func getScrollPosition(index,maxSize,pageSize int) int{
+	var scrollPosition int
+	if index == 0 || maxSize < pageSize || index < pageSize/2{
+		scrollPosition = 0
+	}else{
+		scrollPosition = index - pageSize/2
+		if scrollPosition+pageSize > maxSize{
+			scrollPosition = scrollPosition-(pageSize-(maxSize-scrollPosition))
+		}
+	}
+	return scrollPosition
+}
+
