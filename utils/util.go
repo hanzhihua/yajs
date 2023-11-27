@@ -15,32 +15,32 @@ import (
 )
 
 const (
-	NAME   = "yajs"
-	SLOGAN = "Yet another jump server"
-	HOSTKEYFILE = "yajs_hk"
-	WebUserKey  = "web"
-	RootUserkey = "root"
-	UpgradeFlag = "__up"
-	SshUserFlag = "@@@"
-	USER_KEY = "user_key"
-	SERVER_KEY = "server_key"
-	SSHUSER_KEY = "sshuser_key"
-	IDILTIMEOUT_KEY = "idiltimeout_key"
-	WRITER_KEY = "writer_key"
+	NAME             = "yajs"
+	SLOGAN           = "Yet another jump server"
+	HOSTKEYFILE      = "yajs_hk"
+	WebUserKey       = "web"
+	RootUserkey      = "root"
+	UpgradeFlag      = "__up"
+	SshUserFlag      = "@@@"
+	USER_KEY         = "user_key"
+	SERVER_KEY       = "server_key"
+	SSHUSER_KEY      = "sshuser_key"
+	IDILTIMEOUT_KEY  = "idiltimeout_key"
+	WRITER_KEY       = "writer_key"
 	Default_SSH_PORT = 22
-	SERVER_PREFIX = "server:"
-	MENU_PREFIX = "menu:"
-	TIME_LAYOUT = "2006-01-02 15:04:05"
+	SERVER_PREFIX    = "server:"
+	MENU_PREFIX      = "menu:"
+	TIME_LAYOUT      = "2006-01-02 15:04:05"
 )
 
 var (
-	ConfigDir string
+	ConfigDir      string
 	SshIdleTimeout int
-	Port int
+	Port           int
 )
 
 var (
-	ProcUser *user.User
+	ProcUser  *user.User
 	blackList = []string{"rm", "mkfs", "mkfs.ext3", "make.ext2", "make.ext4", "make2fs", "shutdown", "reboot", "init", "dd"}
 )
 
@@ -53,7 +53,7 @@ func init() {
 	ProcUser = theUser
 }
 
-func getFilename(i uint8) string{
+func getFilename(i uint8) string {
 	_, file, _, ok := runtime.Caller(int(i))
 	if !ok {
 		file = "???"
@@ -63,8 +63,8 @@ func getFilename(i uint8) string{
 	return file
 }
 
-func printCurrentFileName(i uint8){
-	fmt.Printf("current go file name: %s \n ",getFilename(i))
+func printCurrentFileName(i uint8) {
+	fmt.Printf("current go file name: %s \n ", getFilename(i))
 }
 
 func FilePath(path string) string {
@@ -88,7 +88,7 @@ func IsDirector(path string) bool {
 }
 
 func IsSaftCMDDefault(cmd string) bool {
-	return IsSaftCMD(cmd,blackList)
+	return IsSaftCMD(cmd, blackList)
 }
 
 func IsSaftCMD(cmd string, blacks []string) bool {
@@ -104,24 +104,24 @@ func IsSaftCMD(cmd string, blacks []string) bool {
 	return true
 }
 
-func GetLocalIPs() ([]string,error) {
+func GetLocalIPs() ([]string, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	var ips []string
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				ips = append(ips,ipnet.IP.String())
+				ips = append(ips, ipnet.IP.String())
 			}
 		}
 	}
-	return ips,nil
+	return ips, nil
 }
 
 func ContainsStr(slice []string, element string) bool {
-	if slice == nil{
+	if slice == nil {
 		return false
 	}
 
@@ -133,14 +133,14 @@ func ContainsStr(slice []string, element string) bool {
 	return false
 }
 
-func PrintBanner(w io.Writer){
+func PrintBanner(w io.Writer) {
 
 	w.Write([]byte("\n"))
 	templ := `{{ .AnsiColor.BrightMagenta }}{{ .Title "Yajs" "starwars" 0 }}{{ .AnsiColor.Default }}`
 	banner.InitString(w, true, true, templ)
 }
 
-func PrintBannerWithUsername(w io.Writer,username string){
+func PrintBannerWithUsername(w io.Writer, username string) {
 
 	w.Write([]byte("\n"))
 	templ := `{{ .AnsiColor.BrightMagenta }}{{ .Title "Yajs" "starwars" 0 }}{{ .AnsiColor.Default }}`
@@ -149,7 +149,10 @@ func PrintBannerWithUsername(w io.Writer,username string){
 	color.Fprint(w, fmt.Sprintf("\n当前登陆用户名: %s\n", username))
 }
 
-func PrintStackTrace(){
+func PrintStackTrace() {
 	s := string(debug.Stack())
-	Logger.Errorf("exception stack:\n%s",s)
+	Logger.Errorf("exception stack:\n%s", s)
 }
+
+
+

@@ -8,10 +8,12 @@ require (
 	github.com/alibabacloud-go/tea v1.2.1
 	github.com/alibabacloud-go/tea-console v1.0.0
 	github.com/casbin/casbin/v2 v2.77.2
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/creack/pty v1.1.18
 	github.com/dimiro1/banner v1.1.0
 	github.com/fatih/color v1.15.0
 	github.com/gliderlabs/ssh v0.3.5
+	github.com/gofrs/flock v0.8.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
@@ -29,7 +31,6 @@ require (
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/aliyun/credentials-go v1.1.2 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
-	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

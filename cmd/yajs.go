@@ -31,6 +31,12 @@ func main() {
 		return
 	}
 
+	lock, err := CreatePidFile()
+	if err != nil{
+		panic(err)
+	}
+	defer  removePidFile(lock)
+
 	core.Run()
 }
 
