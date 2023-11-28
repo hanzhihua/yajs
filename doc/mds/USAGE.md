@@ -130,7 +130,7 @@ WantedBy=multi-user.target
   * 使用ssh-keygen生成公私钥，把公钥内容copy到pubs/*_pub文件
   * 私钥给到用户，做登录使用
 * 修改权限 acl_policy.csv
-* reload: kill -usr1 pid 
+* reload: .yajs -s reload 
 
 
 ### 查看审计日志
