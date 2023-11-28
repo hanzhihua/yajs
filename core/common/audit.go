@@ -45,95 +45,95 @@ var (
 
 type AduitIO struct {
 	frontSess *YajsSession
-	backSess *gossh.Session
-	file *os.File
-	rz           bool
-	sz           bool
+	backSess  *gossh.Session
+	file      *os.File
+	rz        bool
+	sz        bool
 }
 
-func NewAduitIO(sess *YajsSession) (*AduitIO,error){
+func NewAduitIO(sess *YajsSession) (*AduitIO, error) {
 
 	writer := &AduitIO{
 		frontSess: sess,
-		backSess: nil,
+		backSess:  nil,
 	}
-	logDir := fmt.Sprintf("%s%s",*config.ConfDir,"/logs")
-	if !utils.IsDirector(logDir){
+	logDir := fmt.Sprintf("%s%s", *config.ConfDir, "/logs")
+	if !utils.IsDirector(logDir) {
 		os.MkdirAll(logDir, os.FileMode(0755))
 	}
 
 	timestr := time.Now().Format("20060102150405")
-	path :=  fmt.Sprintf("%s%s_%s_%s%s", logDir, "/r",(*sess).User(),timestr,".log")
+	path := fmt.Sprintf("%s%s_%s_%s%s", logDir, "/r", (*sess).User(), timestr, ".log")
 	var err error
-	writer.file,err = os.Create(path)
-	if err != nil{
-		return nil,err
-	}else{
-		(*sess).Context().(ssh.Context).SetValue(utils.WRITER_KEY,writer)
-		return writer,nil
+	writer.file, err = os.Create(path)
+	if err != nil {
+		return nil, err
+	} else {
+		(*sess).Context().(ssh.Context).SetValue(utils.WRITER_KEY, writer)
+		return writer, nil
 	}
 }
 
 func GetAduitIO(sess *YajsSession) *AduitIO {
-	writer,ok:=(*sess).Context().Value(utils.WRITER_KEY).(*AduitIO)
-	if ok{
+	writer, ok := (*sess).Context().Value(utils.WRITER_KEY).(*AduitIO)
+	if ok {
 		return writer
-	}else{
+	} else {
 		return nil
 	}
 }
 
 func (w *AduitIO) BeginWrite(serverName string) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
-	content := fmt.Sprintf(serverName+" begin==========================%s===========================\n",timestr)
-	return w.file.Write([]byte(content));
+	content := fmt.Sprintf(serverName+" begin==========================%s===========================\n", timestr)
+	return w.file.Write([]byte(content))
 }
 
 func (w *AduitIO) WriteEnd(serverName string) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
-	content := fmt.Sprintf(serverName+" end==========================%s===========================\n\n\n",timestr)
-	return w.file.Write([]byte(content));
+	content := fmt.Sprintf(serverName+" end==========================%s===========================\n\n\n", timestr)
+	return w.file.Write([]byte(content))
 }
 
 func (w *AduitIO) WriteExist(panic bool) (n int, err error) {
 	timestr := time.Now().Format(utils.TIME_LAYOUT)
-	content := fmt.Sprintf("Panic:%t,Exist==========================%s===========================\n\n\n",panic,timestr)
-	return w.file.Write([]byte(content));
+	content := fmt.Sprintf("Panic:%t,Exist==========================%s===========================\n\n\n", panic, timestr)
+	return w.file.Write([]byte(content))
 }
 
 func (w *AduitIO) Write(p []byte) (n int, err error) {
 
 	if !w.sz && !w.rz {
-		if bytes.Contains(p,ZModemSZStart){
+		if bytes.Contains(p, ZModemSZStart) {
 			w.sz = true
 			w.file.Write([]byte("sz start\n"))
-		}else if bytes.Contains(p,ZModemRZStart){
+		} else if bytes.Contains(p, ZModemRZStart) {
 			w.rz = true
 			w.file.Write([]byte("rz start\n"))
 		}
 	}
 
-	if w.sz{
-		if bytes.Contains(p,ZModemSZEnd){
+	if w.sz {
+		if bytes.Contains(p, ZModemSZEnd) {
 			w.sz = false
 
 			w.file.Write([]byte("sz end\n"))
-		}else if bytes.Contains(p,ZModemCancel){
+		} else if bytes.Contains(p, ZModemCancel) {
 			w.sz = false
 			w.file.Write([]byte("sz cancle\n"))
 		}
-	}else if w.rz{
-		if bytes.Contains(p,ZModemRZEnd){
+	} else if w.rz {
+		if bytes.Contains(p, ZModemRZEnd) {
 			w.rz = false
-			w.file.Write(p);
+			w.file.Write(p)
 			w.file.Write([]byte("rz end\n"))
-		}else if bytes.Contains(p,ZModemCancel){
+		} else if bytes.Contains(p, ZModemCancel) {
 			w.rz = false
-			w.file.Write(p);
+			w.file.Write(p)
 			w.file.Write([]byte("rz cancle\n"))
 		}
-	}else{
-		w.file.Write(p);
+	} else {
+		w.file.Write(p)
 	}
 	//utils.Logger.Warningf(string(p))
 	return (*w.frontSess).Write(p)
@@ -143,5 +143,3 @@ func (w *AduitIO) Read(p []byte) (n int, err error) {
 	n, err = (*w.frontSess).Read(p)
 	return n, err
 }
-
-

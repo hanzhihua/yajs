@@ -26,7 +26,6 @@ func NewTerminal(server *config.Server, sshUser *config.SSHUser, sess *common.Ya
 		return err
 	}
 
-
 	upstreamSess.Stdout = aduitIO
 	upstreamSess.Stdin = aduitIO
 	upstreamSess.Stderr = aduitIO

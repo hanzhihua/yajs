@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func BatchRunCMD(sess *common.YajsSession,cmdFile string) error{
+func BatchRunCMD(sess *common.YajsSession, cmdFile string) error {
 	readFile, err := os.Open(cmdFile)
 	if err != nil {
 		return err
@@ -26,15 +26,15 @@ func BatchRunCMD(sess *common.YajsSession,cmdFile string) error{
 		fileLines = append(fileLines, fileScanner.Text())
 	}
 	if len(fileLines) != 2 {
-		return errors.New(fmt.Sprintf("the line of %s content is not two or three lines",readFile))
+		return errors.New(fmt.Sprintf("the line of %s content is not two or three lines", readFile))
 	}
-	hosts := strings.Split(fileLines[0],",")
+	hosts := strings.Split(fileLines[0], ",")
 	cmd := fileLines[1]
-	if !utils.IsSaftCMDDefault(cmd){
+	if !utils.IsSaftCMDDefault(cmd) {
 		return errors.New("no saft cmd")
 	}
-	for _,host := range hosts{
-		err = runCMD(sess,host,cmd)
+	for _, host := range hosts {
+		err = runCMD(sess, host, cmd)
 		if err != nil {
 			return err
 		}
@@ -42,28 +42,28 @@ func BatchRunCMD(sess *common.YajsSession,cmdFile string) error{
 	return nil
 }
 
-func runCMD(sess *common.YajsSession,host,cmd string) error{
+func runCMD(sess *common.YajsSession, host, cmd string) error {
 	server := config.Instance.GetServerByName(&host)
-	if server == nil{
-		return errors.New(fmt.Sprintf("%s is not a valid host",host))
+	if server == nil {
+		return errors.New(fmt.Sprintf("%s is not a valid host", host))
 	}
-	sshuer,err := config.Instance.GetSshUser(&sess.Session,host)
-	if err != nil{
+	sshuer, err := config.Instance.GetSshUser(&sess.Session, host)
+	if err != nil {
 		return err
 	}
-	client, err := client.NewSSHClient(server,  sshuer)
+	client, err := client.NewSSHClient(server, sshuer)
 	defer client.Close()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	session, err := client.NewSession()
 	if err != nil {
 		return err
 	}
-	bs,err := session.CombinedOutput(cmd)
+	bs, err := session.CombinedOutput(cmd)
 	if err != nil {
 		return err
 	}
-	utils.Logger.Infof("%s in %s run was sucessful,result:%v",cmd,host,bs)
+	utils.Logger.Infof("%s in %s run was sucessful,result:%v", cmd, host, bs)
 	return nil
 }

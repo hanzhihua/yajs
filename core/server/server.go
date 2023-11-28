@@ -21,20 +21,19 @@ import (
 	"unsafe"
 )
 
+func Run() {
 
-func Run(){
-
-	addr := ":"+strconv.Itoa(utils.Port)
-	hkFile,err := config.Instance.GetHostKeyFile()
-	if err != nil{
-		utils.Logger.Error("fail to start,err:%v",err)
+	addr := ":" + strconv.Itoa(utils.Port)
+	hkFile, err := config.Instance.GetHostKeyFile()
+	if err != nil {
+		utils.Logger.Error("fail to start,err:%v", err)
 		os.Exit(2)
 	}
 	ssh.Handle(func(sess ssh.Session) {
 		yasess := common.NewYajsSession(&sess)
-		_,err := common.NewAduitIO(yasess)
-		if err != nil{
-			utils.Logger.Errorf("it occur error :%v, when generated aduit log ",err)
+		_, err := common.NewAduitIO(yasess)
+		if err != nil {
+			utils.Logger.Errorf("it occur error :%v, when generated aduit log ", err)
 			return
 		}
 		defer func() {
@@ -42,16 +41,15 @@ func Run(){
 			if r := recover(); r != nil {
 				utils.PrintStackTrace()
 				common.GetAduitIO(yasess).WriteExist(true)
-			}else{
+			} else {
 				common.GetAduitIO(yasess).WriteExist(false)
 			}
 		}()
 
-
 		changeIdleTimeout(yasess)
 
-		utils.PrintBannerWithUsername(yasess,yasess.User())
-		uiService := ui.UIService{Session:yasess}
+		utils.PrintBannerWithUsername(yasess, yasess.User())
+		uiService := ui.UIService{Session: yasess}
 		uiService.ShowUI()
 	})
 
@@ -69,83 +67,81 @@ func Run(){
 	))
 }
 
-
 func publickKeyAuth(ctx ssh.Context, key ssh.PublicKey) bool {
-	username,err := GetRealName(ctx)
-	if err != nil{
+	username, err := GetRealName(ctx)
+	if err != nil {
 		utils.Logger.Error(err)
 		return false
 	}
 
 	user := config.Instance.GetUserByUsername(username)
-	if user == nil{
-		utils.Logger.Warningf("%s does not exist",*username)
+	if user == nil {
+		utils.Logger.Warningf("%s does not exist", *username)
 		return false
 	}
 
-	if isLocal(ctx){
+	if isLocal(ctx) {
 		utils.Logger.Warningf("test yajs in local")
-		ctx.SetValue(utils.USER_KEY,user)
+		ctx.SetValue(utils.USER_KEY, user)
 		return true
 	}
 
-	pubkey, _, _, _, err := ssh.ParseAuthorizedKey( []byte(user.PublicKeyContent))
-	if err != nil{
-		utils.Logger.Errorf("%s login fail, because occurs err:%v",username,err)
+	pubkey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(user.PublicKeyContent))
+	if err != nil {
+		utils.Logger.Errorf("%s login fail, because occurs err:%v", username, err)
 		return false
 	}
 	b := ssh.KeysEqual(key, pubkey)
-	if b{
-		utils.Logger.Warningf("%s login successful,remote_ip:%s,local_ip:%s",*username,ctx.Value(ssh.ContextKeyRemoteAddr),ctx.Value(ssh.ContextKeyLocalAddr))
-		ctx.SetValue(utils.USER_KEY,user)
-	}else{
-		utils.Logger.Warningf("%s login failed,remote_ip:%s,local_ip:%s",*username,ctx.Value(ssh.ContextKeyRemoteAddr),ctx.Value(ssh.ContextKeyLocalAddr))
+	if b {
+		utils.Logger.Warningf("%s login successful,remote_ip:%s,local_ip:%s", *username, ctx.Value(ssh.ContextKeyRemoteAddr), ctx.Value(ssh.ContextKeyLocalAddr))
+		ctx.SetValue(utils.USER_KEY, user)
+	} else {
+		utils.Logger.Warningf("%s login failed,remote_ip:%s,local_ip:%s", *username, ctx.Value(ssh.ContextKeyRemoteAddr), ctx.Value(ssh.ContextKeyLocalAddr))
 	}
 	return b
 }
 
-
-func GetRealName(ctx ssh.Context) (*string,error){
+func GetRealName(ctx ssh.Context) (*string, error) {
 	username := ctx.User()
-	if len(strings.TrimSpace(username)) == 0{
-		return nil,errors.New("username is blank")
+	if len(strings.TrimSpace(username)) == 0 {
+		return nil, errors.New("username is blank")
 	}
 
-	if strings.Contains(username,utils.SshUserFlag){
-		users :=strings.Split(username,utils.SshUserFlag)
+	if strings.Contains(username, utils.SshUserFlag) {
+		users := strings.Split(username, utils.SshUserFlag)
 		username = users[0]
 		sshuser := users[1]
-		if sshuser != ""{
-			ctx.SetValue(utils.SSHUSER_KEY,&sshuser)
+		if sshuser != "" {
+			ctx.SetValue(utils.SSHUSER_KEY, &sshuser)
 		}
 
-		if len(users) == 3{
-			idle_t,err := strconv.Atoi(users[2])
-			if err == nil{
-				ctx.SetValue(utils.IDILTIMEOUT_KEY,idle_t)
-			}else{
-				utils.Logger.Warningf("%s is not integer",users[2])
+		if len(users) == 3 {
+			idle_t, err := strconv.Atoi(users[2])
+			if err == nil {
+				ctx.SetValue(utils.IDILTIMEOUT_KEY, idle_t)
+			} else {
+				utils.Logger.Warningf("%s is not integer", users[2])
 			}
 		}
-		return &username,nil
-	}else{
-		return &username,nil
+		return &username, nil
+	} else {
+		return &username, nil
 	}
 }
 
-func isLocal(ctx ssh.Context) bool{
+func isLocal(ctx ssh.Context) bool {
 	if addr, ok := ctx.Value(ssh.ContextKeyRemoteAddr).(*net.TCPAddr); ok {
-		if addr.IP.IsLoopback(){
+		if addr.IP.IsLoopback() {
 			return true
-		}else{
+		} else {
 			return false
 		}
-	}else{
+	} else {
 		return false
 	}
 }
 
-func printBanner(sess *ssh.Session){
+func printBanner(sess *ssh.Session) {
 
 	(*sess).Write([]byte("\n"))
 	templ := `{{ .AnsiColor.BrightMagenta }}{{ .Title "Yajs" "starwars" 0 }}{{ .AnsiColor.Default }}`
@@ -164,14 +160,11 @@ func SetUnexportedField(field reflect.Value, value interface{}) {
 		Set(reflect.ValueOf(value))
 }
 
-
-
-
-func changeIdleTimeout(sess ssh.Session){
+func changeIdleTimeout(sess ssh.Session) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			utils.Logger.Warningf("r:%v",r)
+			utils.Logger.Warningf("r:%v", r)
 		}
 	}()
 
@@ -187,14 +180,14 @@ func changeIdleTimeout(sess ssh.Session){
 
 	ctx := sess.Context()
 
-	idleTimeoutInt,ok := ctx.Value(utils.IDILTIMEOUT_KEY).(int)
-	if !ok{
+	idleTimeoutInt, ok := ctx.Value(utils.IDILTIMEOUT_KEY).(int)
+	if !ok {
 		return
 	}
 
-	serverConn,ok := ctx.Value(ssh.ContextKeyConn).(*gossh.ServerConn)
+	serverConn, ok := ctx.Value(ssh.ContextKeyConn).(*gossh.ServerConn)
 	sess.Environ()
-	if ok{
+	if ok {
 		value := reflect.ValueOf(serverConn.Conn)
 		value = value.Elem()
 		value = value.FieldByName("sshConn")
@@ -205,8 +198,8 @@ func changeIdleTimeout(sess ssh.Session){
 		value = value.FieldByName("idleTimeout")
 		var d = (*time.Duration)(unsafe.Pointer(value.UnsafeAddr()))
 		*d = (time.Duration(idleTimeoutInt) * time.Second)
-	}else{
-		utils.Logger.Warningf("conn is not server conn,%v",serverConn)
+	} else {
+		utils.Logger.Warningf("conn is not server conn,%v", serverConn)
 	}
 }
 

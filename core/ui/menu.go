@@ -171,7 +171,7 @@ func FileRequired(field string) func(string) error {
 	}
 }
 
-func signal(sess *ssh.Session){
+func signal(sess *ssh.Session) {
 	value := reflect.ValueOf(sess)
 	value = value.Elem()
 	v := value.Interface()
@@ -181,7 +181,7 @@ func signal(sess *ssh.Session){
 	value = value.FieldByName("pending")
 	value = GetUnexportedField(value)
 	//value = value.Elem()
-	private_write(value.Interface(),[]byte(" "))
+	private_write(value.Interface(), []byte(" "))
 	//value = value.MethodByName("write")
 	//value.Call([]reflect.Value{reflect.ValueOf([]byte(" "))})
 	//value = value.FieldByName("Cond")
@@ -194,4 +194,4 @@ func GetUnexportedField(field reflect.Value) reflect.Value {
 }
 
 //go:linkname private_write golang.org/x/crypto/ssh.(*buffer).write
-func private_write(b interface{},buf []byte)
+func private_write(b interface{}, buf []byte)

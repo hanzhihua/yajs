@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"syscall"
 )
 
 const (
@@ -93,4 +94,16 @@ func removePidFile(lock *flock.Flock) {
 	filename := lock.Path()
 	lock.Close()
 	os.Remove(filename)
+}
+
+func Reload() error {
+	pid, err := getPid()
+	if err != nil {
+		return err
+	}
+
+	if process, err := os.FindProcess(pid); err == nil {
+		return process.Signal(syscall.SIGUSR1)
+	}
+	return err
 }

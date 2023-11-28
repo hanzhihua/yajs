@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func getAllServer() ([]*config.Server,error){
+func getAllServer() ([]*config.Server, error) {
 
 	openapiConfig := &openapi.Config{}
 	openapiConfig.AccessKeyId = tea.String(os.Getenv("ACCESS_KEY_ID"))
@@ -19,7 +19,7 @@ func getAllServer() ([]*config.Server,error){
 	openapiConfig.ReadTimeout = tea.Int(5000)
 	client, _err := ecs.NewClient(openapiConfig)
 	if _err != nil {
-		return nil,_err
+		return nil, _err
 	}
 	regionId := "cn-shanghai"
 	describeInstancesRequest := &ecs.DescribeInstancesRequest{
@@ -28,28 +28,28 @@ func getAllServer() ([]*config.Server,error){
 	}
 	resp, _err := client.DescribeInstances(describeInstancesRequest)
 	if _err != nil {
-		return nil,_err
+		return nil, _err
 	}
 
-	ips,err := utils.GetLocalIPs()
-	if err != nil{
-		return nil,err
+	ips, err := utils.GetLocalIPs()
+	if err != nil {
+		return nil, err
 	}
 	var servers []*config.Server
 	instances := resp.Body.Instances.Instance
 	for _, instance := range instances {
 		server := config.Server{
 			Name: *instance.InstanceName,
-			IP: *instance.VpcAttributes.PrivateIpAddress.IpAddress[0],
+			IP:   *instance.VpcAttributes.PrivateIpAddress.IpAddress[0],
 			Port: 22,
 		}
-		if !utils.ContainsStr(ips,server.IP){
-			servers = append(servers,&server)
-		}else{
-			utils.Logger.Warningf("ignore jumpserver:%v",server)
+		if !utils.ContainsStr(ips, server.IP) {
+			servers = append(servers, &server)
+		} else {
+			utils.Logger.Warningf("ignore jumpserver:%v", server)
 		}
 
 	}
-	return servers,nil
+	return servers, nil
 
 }

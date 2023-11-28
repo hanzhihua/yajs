@@ -22,7 +22,7 @@ func (uiService *UIService) ShowUI() {
 
 func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptionLabel string, selectedChain []*MenuItem) {
 	var menuPui *promptui.Select
-	var index, backIndex,scrollPosition int
+	var index, backIndex, scrollPosition int
 	var subMenuLabel string
 	var err error
 
@@ -59,18 +59,18 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 		}
 
 		menuPui = &promptui.Select{
-			Label:     label,
-			Items:     menuLabels,
-			Stdin:     uiService.Session,
-			Stdout:    uiService.Session,
-			Templates: templates,
-			Searcher:  searcher,
+			Label:        label,
+			Items:        menuLabels,
+			Stdin:        uiService.Session,
+			Stdout:       uiService.Session,
+			Templates:    templates,
+			Searcher:     searcher,
 			HideSelected: true,
-			Size:      10,
+			Size:         10,
 		}
-		scrollPosition = getScrollPosition(index,backIndex,menuPui.Size)
+		scrollPosition = getScrollPosition(index, backIndex, menuPui.Size)
 
-		index, subMenuLabel, err = menuPui.RunCursorAt(index,scrollPosition)
+		index, subMenuLabel, err = menuPui.RunCursorAt(index, scrollPosition)
 
 		if err != nil {
 			utils.Logger.Infof("Select menus error %s\n", err)
@@ -101,8 +101,8 @@ func (uiService *UIService) ShowMenu(label string, menus *[]*MenuItem, BackOptio
 				utils.Logger.Errorf("Run selected func err: %v", err)
 				ErrorInfo(selected.Label+" has error:", err, uiService.Session)
 			}
-		} else{
-			utils.Logger.Errorf("%s have no function ",selected.Label)
+		} else {
+			utils.Logger.Errorf("%s have no function ", selected.Label)
 		}
 	}
 }
@@ -113,16 +113,15 @@ func ErrorInfo(prefix string, err error, sess *common.YajsSession) {
 	read.Fprint(*sess, fmt.Sprintf("%s \n", err))
 }
 
-func getScrollPosition(index,maxSize,pageSize int) int{
+func getScrollPosition(index, maxSize, pageSize int) int {
 	var scrollPosition int
-	if index == 0 || maxSize < pageSize || index < pageSize/2{
+	if index == 0 || maxSize < pageSize || index < pageSize/2 {
 		scrollPosition = 0
-	}else{
+	} else {
 		scrollPosition = index - pageSize/2
-		if scrollPosition+pageSize > maxSize{
-			scrollPosition = scrollPosition-(pageSize-(maxSize-scrollPosition))
+		if scrollPosition+pageSize > maxSize {
+			scrollPosition = scrollPosition - (pageSize - (maxSize - scrollPosition))
 		}
 	}
 	return scrollPosition
 }
-

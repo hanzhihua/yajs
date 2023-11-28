@@ -8,15 +8,14 @@ import (
 	"os"
 )
 
-
-func Run(){
+func Run() {
 
 	trapSignals()
 
 	config.ConfDir = &utils.ConfigDir
 	err := config.Setup()
-	if err != nil{
-		utils.Logger.Errorf("fail to start,err:%v",err)
+	if err != nil {
+		utils.Logger.Errorf("fail to start,err:%v", err)
 		os.Exit(2)
 	}
 	utils.PrintBanner(os.Stdout)

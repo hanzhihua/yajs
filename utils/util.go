@@ -153,6 +153,3 @@ func PrintStackTrace() {
 	s := string(debug.Stack())
 	Logger.Errorf("exception stack:\n%s", s)
 }
-
-
-
